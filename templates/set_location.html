@@ -1,0 +1,21 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+
+    <form action="/render_map" id="choose_location">
+        <label for="choose_location">Choose a location:</h1>
+
+            <select id="location" name="location">
+                <option value="county1">County1</option>
+                <option value="county2">County2</option>
+                <option value="county3">County3</option>
+                <option value="county4">County4</option>
+
+                <input id="submit_location" type="submit" name="submit">
+            </select>
+    </form>
+
+
+
+{% endblock %}

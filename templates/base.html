@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+    <head>
+      <title>Bird occurences</title>
+    </head>
+
+    <body>
+        <div>
+            {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+              <div class="alert alert-warning">{{ message }}</div>
+            {% endfor %}
+            {% endwith %}
+        </div>
+        
+        <div>
+
+        {% block content %} put your content here {% endblock %}
+
+        </div>
+
+    </body>
+</html>
