@@ -1,9 +1,17 @@
 from sqlalchemy import func
 from model import Species, SamplingEvent, Observation
-import datetime
+from datetime import datetime
 
 from model import connect_to_db, db
 from server import app
+
+# KEY: eBird row ordering
+# global_id, taxonomic_num, category, common_name, scientific_name = row[:5]
+# __, __, observation_count = row[7]
+# __, __, __, __, __, __, county = row[14]
+# __, __, __, __, __, latitude, longitude, observation_date = row[20:22]
+# __, __, __, __, __, __, sampling_event_id = row[29]
+# __, __, __, __, __, __, all_species = row[36]
 
 
 def load_species():
@@ -14,18 +22,25 @@ def load_species():
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate data
     Species.query.delete()
+    count = 0
 
     # Read file and insert data
-    for row in open("seed_data/u.user"):
-        row = row.rstrip()
-        user_id, age, gender, occupation, zipcode = row.split("|")
+    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+        if count != 0:
+            row = row.rstrip()
+            row = row.split("\t")[:5]
+            taxonomic_num = row[1]
+            category = row[2]
+            common_name = row[3]
+            scientific_name = row[4]
 
-        user = User(user_id=user_id,
-                    age=age,
-                    zipcode=zipcode)
+            species = Species(taxonomic_num=taxonomic_num,
+                              common_name=common_name,
+                              scientific_name=scientific_name)
 
         # Add to the session or it won't ever be stored
-        db.session.add(user)
+            db.session.add(species)
+        count += 1
 
     # Commit work
     db.session.commit()
@@ -39,29 +54,38 @@ def load_sampling_event():
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate data
     SamplingEvent.query.delete()
+    count = 0
 
     # Read file insert data
-    for i, row in enumerate(open("seed_data/u.item")):
-        row = row.rstrip()
-        row = row.split("|")[:-19]
-        movie_id, movie, release_date, __, imdb_url = row
-        title = movie.split("(")
-        title = title[0].rstrip()
-        title = title.decode("latin-1")
-        if release_date:
-            released_at = datetime.datetime.strptime(release_date, "%d-%b-%Y")
-        else:
-            released_at = None
+    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+        if count != 0:
+            row = row.rstrip()
+            row = row.split("\t")[:37]
 
-        movie = Movies(title=title,
-                       released_at=released_at,
-                       imdb_url=imdb_url)
+            county = row[14]
+            latitude = row[20]
+            longitude = row[21]
 
-        # Add to the session or it won't ever be stored
-        db.session.add(movie)
+            observation_date = row[22]
+            if observation_date:
+                observation_date = datetime.strptime(observation_date, '%m/%d/%Y')
+            else:
+                observation_date = None
 
-        if i % 100 == 0:
-            print i
+            checklist = row[29]
+            all_species = row[36]
+
+            samplingEvent = SamplingEvent(county=county,
+                                          latitude=latitude,
+                                          longitude=longitude,
+                                          observation_date=observation_date,
+                                          checklist=checklist,
+                                          all_species=all_species)
+
+            # Add to the session or it won't ever be stored
+            db.session.add(samplingEvent)
+
+        count += 1
 
     # Commit work
     db.session.commit()
@@ -75,24 +99,27 @@ def load_observation():
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate users
     Observation.query.delete()
+    count = 0
 
     # Read file and insert data
-    for i, row in enumerate(open("seed_data/u.data")):
-        row = row.rstrip()
-        user_id, movie_id, score, __ = row.split("\t")
-        user_id = int(user_id)
-        movie_id = int(movie_id)
-        score = int(score)
+    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+        if count != 0:
+            row = row.rstrip()
+            row = row.split("\t")[:30]
+            global_id = row[0]
+            species_id = row[1]
+            observation_count = row[7]
+            sampling_event_id = row[29]
 
-        rating = Ratings(user_id=user_id,
-                         movie_id=movie_id,
-                         score=score)
+            observation = Observation(global_id=global_id,
+                                      species_id=species_id,
+                                      observation_count=observation_count,
+                                      sampling_event_id=sampling_event_id)
 
-        # Add to the session or it won't ever be stored
-        db.session.add(rating)
+            # Add to the session or it won't ever be stored
+            db.session.add(observation)
 
-        if i % 100 == 0:
-            print i
+        count += 1
 
     # Commit work
     db.session.commit()
@@ -118,7 +145,7 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data
-    load_species()
-    load_sampling_event()
+    # load_species()
+    # load_sampling_event()
     load_observation()
-    set_val_user_id()
+    # set_val_user_id()
