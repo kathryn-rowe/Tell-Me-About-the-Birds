@@ -23,25 +23,32 @@ def load_species():
     # we won't be trying to add duplicate data
     Species.query.delete()
     count = 0
+    tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
+
+            # Get the values from the row
             taxonomic_num = row[1]
-            category = row[2]
+            category_type = row[2]
             common_name = row[3]
             scientific_name = row[4]
 
-            species = Species(taxonomic_num=taxonomic_num,
-                              common_name=common_name,
-                              scientific_name=scientific_name)
+            # Using the set to store values; do not want to add multiple rows of each species
+            # Category must be species, otherwise the column returns non-species info, ex gull sp.
+            if taxonomic_num not in tax_number_set and category_type == 'species':
+                tax_number_set.add(taxonomic_num)
 
-        # Add to the session or it won't ever be stored
-            db.session.add(species)
+                species = Species(taxonomic_num=taxonomic_num,
+                                  common_name=common_name,
+                                  scientific_name=scientific_name)
+
+                # Add to the session or it won't ever be stored
+                db.session.add(species)
         count += 1
-
     # Commit work
     db.session.commit()
 
@@ -55,38 +62,48 @@ def load_sampling_event():
     # we won't be trying to add duplicate data
     SamplingEvent.query.delete()
     count = 0
+    checklist_set = set()
 
     # Read file insert data
-    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
 
+            # Get the values from the row
             county = row[14]
-            latitude = row[20]
-            longitude = row[21]
+            latitude = row[22]
+            longitude = row[23]
 
-            observation_date = row[22]
+            # Set observation date to datetime
+            observation_date = row[24]
+            # print observation_date
             if observation_date:
-                observation_date = datetime.strptime(observation_date, '%m/%d/%Y')
+                if "/" in observation_date:
+                    observation_date = datetime.strptime(observation_date, '%m/%d/%Y')
+                else:
+                    observation_date = datetime.strptime(observation_date, '%Y-%m-%d')
             else:
                 observation_date = None
 
-            checklist = row[29]
+            # not sure if I will use this information; reports on species occurence
             all_species = row[36]
 
-            samplingEvent = SamplingEvent(county=county,
-                                          latitude=latitude,
-                                          longitude=longitude,
-                                          observation_date=observation_date,
-                                          checklist=checklist,
-                                          all_species=all_species)
+            # Using the set to store values; do not want to add multiple rows of each checklist
+            checklist = row[29]
+            if checklist not in checklist_set:
+                checklist_set.add(checklist)
 
-            # Add to the session or it won't ever be stored
-            db.session.add(samplingEvent)
+                samplingEvent = SamplingEvent(county=county,
+                                              latitude=latitude,
+                                              longitude=longitude,
+                                              observation_date=observation_date,
+                                              checklist=checklist,
+                                              all_species=all_species)
 
+                # Add to the session or it won't ever be stored
+                db.session.add(samplingEvent)
         count += 1
-
     # Commit work
     db.session.commit()
 
@@ -100,24 +117,31 @@ def load_observation():
     # we won't be trying to add duplicate users
     Observation.query.delete()
     count = 0
+    tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
+
+            # Get the values from the row
             global_id = row[0]
-            species_id = row[1]
+            taxonomic_num = row[1]
+            category_type = row[2]
             observation_count = row[7]
-            sampling_event_id = row[29]
+            checklist = row[29]
 
-            observation = Observation(global_id=global_id,
-                                      species_id=species_id,
-                                      observation_count=observation_count,
-                                      sampling_event_id=sampling_event_id)
+            # Category must be species, otherwise the column returns non-species info, ex gull sp.
+            if category_type == 'species':
 
-            # Add to the session or it won't ever be stored
-            db.session.add(observation)
+                observation = Observation(global_id=global_id,
+                                          taxonomic_num=taxonomic_num,
+                                          observation_count=observation_count,
+                                          checklist=checklist)
+
+                # Add to the session or it won't ever be stored
+                db.session.add(observation)
 
         count += 1
 
@@ -146,6 +170,6 @@ if __name__ == "__main__":
 
     # Import different types of data
     # load_species()
-    # load_sampling_event()
-    load_observation()
+    load_sampling_event()
+    # load_observation()
     # set_val_user_id()
