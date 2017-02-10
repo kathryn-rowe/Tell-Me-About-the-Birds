@@ -26,7 +26,7 @@ def load_species():
     tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
+    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
@@ -65,7 +65,10 @@ def load_sampling_event():
     checklist_set = set()
 
     # Read file insert data
-    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
+
+    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
+        if count > 50:
+            break
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -104,6 +107,8 @@ def load_sampling_event():
                 # Add to the session or it won't ever be stored
                 db.session.add(samplingEvent)
         count += 1
+        if count % 1000 == 0:
+            print count
     # Commit work
     db.session.commit()
 
@@ -120,7 +125,7 @@ def load_observation():
     tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA_198701_201701_relNov-2016.txt"):
+    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
@@ -170,6 +175,6 @@ if __name__ == "__main__":
 
     # Import different types of data
     # load_species()
-    load_sampling_event()
-    # load_observation()
+    # load_sampling_event()
+    load_observation()
     # set_val_user_id()
