@@ -17,16 +17,16 @@ from server import app
 def load_species():
     """Load species data into database."""
 
-    print "Bird data"
+    print "***Bird data***"
 
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate data
-    Species.query.delete()
+    # Species.query.delete()
     count = 0
     tax_number_set = set()
 
-    # Read file and insert data
-    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
+    # Read file that contains 5 years of data and get all species.
+    for row in open("seed_data/ebd_US-CA_201101_201702_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
@@ -34,13 +34,14 @@ def load_species():
             # Get the values from the row
             taxonomic_num = row[1]
             category_type = row[2]
-            common_name = row[3]
-            scientific_name = row[4]
 
             # Using the set to store values; do not want to add multiple rows of each species
             # Category must be species, otherwise the column returns non-species info, ex gull sp.
             if taxonomic_num not in tax_number_set and category_type == 'species':
                 tax_number_set.add(taxonomic_num)
+
+                common_name = row[3]
+                scientific_name = row[4]
 
                 species = Species(taxonomic_num=taxonomic_num,
                                   common_name=common_name,
@@ -56,46 +57,45 @@ def load_species():
 def load_sampling_event():
     """Load Sampling Event information into database."""
 
-    print "Sampling event"
+    print "***Sampling event***"
 
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate data
-    SamplingEvent.query.delete()
     count = 0
     checklist_set = set()
 
     # Read file insert data
 
-    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
-        if count > 50:
-            break
+    for row in open("seed_data/ebd_US-CA-023_201601_201606_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
 
-            # Get the values from the row
-            county = row[14]
-            latitude = row[22]
-            longitude = row[23]
-
             # Set observation date to datetime
             observation_date = row[24]
-            # print observation_date
+
+             # print observation_date
             if observation_date:
                 if "/" in observation_date:
                     observation_date = datetime.strptime(observation_date, '%m/%d/%Y')
                 else:
                     observation_date = datetime.strptime(observation_date, '%Y-%m-%d')
-            else:
-                observation_date = None
 
-            # not sure if I will use this information; reports on species occurence
-            all_species = row[36]
+            # if observation_date.year == 2014:
+
+            checklist = row[29]
 
             # Using the set to store values; do not want to add multiple rows of each checklist
-            checklist = row[29]
             if checklist not in checklist_set:
                 checklist_set.add(checklist)
+
+                # Get the values from the row
+                county = row[14]
+                latitude = row[22]
+                longitude = row[23]
+
+                # not sure if I will use this information; reports on species occurence
+                all_species = row[36]
 
                 samplingEvent = SamplingEvent(county=county,
                                               latitude=latitude,
@@ -107,7 +107,8 @@ def load_sampling_event():
                 # Add to the session or it won't ever be stored
                 db.session.add(samplingEvent)
         count += 1
-        if count % 1000 == 0:
+        # print count
+        if count % 100000 == 0:
             print count
     # Commit work
     db.session.commit()
@@ -116,29 +117,30 @@ def load_sampling_event():
 def load_observation():
     """Load Observational data into database."""
 
-    print "Bird Observation event"
+    print "***Bird Observation event***"
 
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate users
-    Observation.query.delete()
+    # Observation.query.delete()
     count = 0
-    tax_number_set = set()
+    # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA_200601_201702_relNov-2016.txt"):
+    for row in open("seed_data/ebd_US-CA-023_201601_201606_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
 
-            # Get the values from the row
-            global_id = row[0]
-            taxonomic_num = row[1]
             category_type = row[2]
-            observation_count = row[7]
-            checklist = row[29]
 
             # Category must be species, otherwise the column returns non-species info, ex gull sp.
             if category_type == 'species':
+
+                # Get the values from the row
+                global_id = row[0]
+                taxonomic_num = row[1]
+                observation_count = row[7]
+                checklist = row[29]
 
                 observation = Observation(global_id=global_id,
                                           taxonomic_num=taxonomic_num,
@@ -174,7 +176,6 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data
-    # load_species()
+    load_species()
     # load_sampling_event()
-    load_observation()
-    # set_val_user_id()
+    # load_observation()
