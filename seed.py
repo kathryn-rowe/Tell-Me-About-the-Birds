@@ -1,4 +1,3 @@
-from sqlalchemy import func
 from model import Species, SamplingEvent, Observation
 from datetime import datetime
 
@@ -9,7 +8,7 @@ from server import app
 # global_id, taxonomic_num, category, common_name, scientific_name = row[:5]
 # __, __, observation_count = row[7]
 # __, __, __, __, __, __, county = row[14]
-# __, __, __, __, __, latitude, longitude, observation_date = row[20:22]
+# __, __, __, __, __, __, __, latitude, longitude, observation_date = row[22:24]
 # __, __, __, __, __, __, sampling_event_id = row[29]
 # __, __, __, __, __, __, all_species = row[36]
 
@@ -66,7 +65,7 @@ def load_sampling_event():
 
     # Read file insert data
 
-    for row in open("seed_data/ebd_US-CA-023_201601_201606_relNov-2016.txt"):
+    for row in open("seed_data/ebd_US-CA_201607_201612_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -126,7 +125,7 @@ def load_observation():
     # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA-023_201601_201606_relNov-2016.txt"):
+    for row in open("seed_data/ebd_US-CA_201607_201612_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
@@ -152,8 +151,8 @@ def load_observation():
 
         count += 1
 
-    # Commit work
-    db.session.commit()
+        # Commit work
+        db.session.commit()
 
 # taken from ratings exercise -- do I need this????
 # def set_val_user_id():
@@ -176,6 +175,6 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data
-    load_species()
+    # load_species()
     # load_sampling_event()
-    # load_observation()
+    load_observation()
