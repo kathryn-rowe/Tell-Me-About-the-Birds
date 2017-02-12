@@ -22,22 +22,30 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    location = ["Humboldt", "San Francisco", "Yuba"]
 
-
-@app.route('/choose_location')
-def choose_location():
-    """Choose the location."""
-
-    return render_template("set_location.html")
+    return render_template("homepage.html", location=location)
 
 
 @app.route("/render_map")
 def render_map():
 
-    location = request.args.get("location")
-    return render_template("map_page.html", location=location)
+    county_name = request.args.get("location")
+    print "*********" + county_name
 
+    if county_name == "Yuba":
+        longitude = -121.40
+        latitude = 39.28
+
+    if county_name == "Humboldt":
+        longitude = -123.86
+        latitude = 40.74
+
+    if county_name == "San Francisco":
+        longitude = -122.44
+        latitude = 37.76
+
+    return render_template("mapbox_example.html", longitude=longitude, latitude=latitude)
 
 
 if __name__ == "__main__":
@@ -51,6 +59,4 @@ if __name__ == "__main__":
     # Use the DebugToolbar
     DebugToolbarExtension(app)
 
-
-
-    app.run(port=5000, host='0.0.0.0')
+    app.run(host='0.0.0.0')

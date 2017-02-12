@@ -4,9 +4,17 @@
 
 <h1>Welcome</h1>
 
-<h2>enter</h2>
+<form action="/render_map">
 
-/choose_location
-<!-- look up ways to click on right arrow to enter -->
+    <label for="location">Choose a location</label>
+        <select id="location" name="location">
+            {% for county in location %}
+            <option value="{{ county }}">{{ county }}</option>
+            {% endfor %}
+        </select>
+
+    <input id="submission_info" type="submit" name="submit">
+
+</form>
 
 {% endblock %}
