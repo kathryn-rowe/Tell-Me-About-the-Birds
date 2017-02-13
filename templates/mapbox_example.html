@@ -27,7 +27,7 @@
                 zoom: 9 // starting zoom
             });
 
-            map.scrollZoom.disable();
+            // map.scrollZoom.disable();
 
             birding_locations = {{ birding_locations|safe }}
 
@@ -35,21 +35,48 @@
 
                 map.addSource("birding-locations", {
                     "type": "geojson",
-                    "data": birding_locations
+                    "data": birding_locations,
+                    "cluster": true,
+                    "clusterMaxZoom": 15,
+                    "clusterRadius": 20
                 });
 
+                var layers = [
+                    [0, 'green'],
+                    [20, 'orange'],
+                    [200, 'red']
+                ];
 
+                layers.forEach(function (layer, i) {
+                    map.addLayer({
+                        "id": "cluster-" + i,
+                        "type": "circle",
+                        "source": "birding-locations",
+                        "paint": {
+                            "circle-color": layer[1],
+                            "circle-radius": 70,
+                            "circle-blur": 1
+                        },
+                    "filter": i === layers.length - 1 ?
+                        [">=", "point_count", layer[0]] :
+                        ["all",
+                            [">=", "point_count", layer[0]],
+                            ["<", "point_count", layers[i + 1][0]]]
+                    }, 'waterway-label');
+                });
                 map.addLayer({
-                    "id": "birds",
+                    "id": "unclustered-points",
                     "type": "circle",
                     "source": "birding-locations",
                     "paint": {
-                        "circle-radius": 6,
-                        "circle-color": "#B42222"
+                        "circle-color": 'rgba(0,255,0,0.5)',
+                        "circle-radius": 20,
+                        "circle-blur": 1
                     },
-                });
-            });
-
+                    "filter": ["!=", "cluster", true]
+                }, 'waterway-label');
+            });    
+            
         </script>
 
     </body>
