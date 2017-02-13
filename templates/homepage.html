@@ -8,7 +8,7 @@
 
     <label for="location">Choose a location</label>
         <select id="location" name="location">
-            {% for county in location %}
+            {% for county in counties %}
             <option value="{{ county }}">{{ county }}</option>
             {% endfor %}
         </select>

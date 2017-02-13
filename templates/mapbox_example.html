@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title></title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+        <style>
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+    </head>
+    <body>
+
+    <div id='map'></div>
+        <script>
+            mapboxgl.accessToken = '{{ mapbox_api_key }}';
+            var longitude = {{ longitude }}
+            var latitude = {{ latitude }}
+            var map = new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+                center: [longitude, latitude], // starting position
+                zoom: 9 // starting zoom
+            });
+
+            map.on('load', function () {
+
+                map.addLayer({
+                    "id": "points",
+                    "type": "symbol",
+                    "source": {
+                        "type": "geojson",
+                        "data": {
+                            "type": "FeatureCollection",
+                            "features": [{
+                                
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-123.86, 40.74]
+                                },
+                                "properties": {
+                                    "title": "Mapbox DC",
+                                    "icon": "monument"
+                                }
+                            }, {
+                                
+                                "type": "Feature",
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [-122.44, 37.76]
+                                },
+                                "properties": {
+                                    "title": "Mapbox SF",
+                                    "icon": "harbor"
+                                }
+                            }]
+                        }
+                    },
+
+                    "layout": {
+                            "icon-image": "{icon}-15",
+                            "text-field": "{title}",
+                            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+                            "text-offset": [0, 0.6],
+                            "text-anchor": "top"
+                    }
+                });
+            });
+
+        </script>
+
+    </body>
+</html>
+
+{% endblock %}
