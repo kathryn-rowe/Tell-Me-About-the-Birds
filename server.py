@@ -56,29 +56,15 @@ def create_geojson(sampling_points):
         feature = Feature(geometry=point, properties={})
         lat_long_features.append(feature)
 
+    # Geojson FeatureCollection object
     birding_locations = FeatureCollection(lat_long_features)
-    # Geojson object containing type, spatial ref, and features
-    # birding_locations = {}
-    # birding_locations["type"] = "FeatureCollection"
-
-    # spatial_ref = {}
-    # spatial_ref["type"] = "link"
-    # # Spatial reference type and link
-    # reference = {}
-    # reference["href"] = "http://spatialreference.org/ref/epsg/26910/esriwkt/"
-    # reference["type"] = "esriwkt"
-
-    # spatial_ref["properties"] = reference
-
-    # birding_locations["crs"] = spatial_ref
-
-    # birding_locations["Features"] = lat_long_features
 
     return birding_locations
 
 
 @app.route("/render_map")
 def render_map():
+    """Receives user's choice of county and returns map with locations of eBird checklist submissions."""
 
     county_name = request.args.get("location")
     # print "*********" + county_name
@@ -99,12 +85,11 @@ def render_map():
         location_dict["long"] = location.longitude
         location_dict["lat"] = location.latitude
         sampling_points.append(location_dict)
-    #     print "****" + sampling_points
 
-    # Geojson of birding locations generated from database
+    # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    return render_template("test.html",
+    return render_template("mapbox_example.html",
                            longitude=longitude,
                            latitude=latitude,
                            mapbox_api_key=mapbox_api_key,

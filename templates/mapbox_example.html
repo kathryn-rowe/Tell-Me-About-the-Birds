@@ -23,51 +23,30 @@
                 container: 'map', // container id
                 style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
                 center: [longitude, latitude], // starting position
+                // center: [-121.403732, 40.492392],
                 zoom: 9 // starting zoom
             });
 
+            map.scrollZoom.disable();
+
+            birding_locations = {{ birding_locations|safe }}
+
             map.on('load', function () {
 
-                map.addLayer({
-                    "id": "points",
-                    "type": "symbol",
-                    "source": {
-                        "type": "geojson",
-                        "data": {
-                            "type": "FeatureCollection",
-                            "features": [{
-                                
-                                "type": "Feature",
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [-123.86, 40.74]
-                                },
-                                "properties": {
-                                    "title": "Mapbox DC",
-                                    "icon": "monument"
-                                }
-                            }, {
-                                
-                                "type": "Feature",
-                                "geometry": {
-                                    "type": "Point",
-                                    "coordinates": [-122.44, 37.76]
-                                },
-                                "properties": {
-                                    "title": "Mapbox SF",
-                                    "icon": "harbor"
-                                }
-                            }]
-                        }
-                    },
+                map.addSource("birding-locations", {
+                    "type": "geojson",
+                    "data": birding_locations
+                });
 
-                    "layout": {
-                            "icon-image": "{icon}-15",
-                            "text-field": "{title}",
-                            "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
-                            "text-offset": [0, 0.6],
-                            "text-anchor": "top"
-                    }
+
+                map.addLayer({
+                    "id": "birds",
+                    "type": "circle",
+                    "source": "birding-locations",
+                    "paint": {
+                        "circle-radius": 6,
+                        "circle-color": "#B42222"
+                    },
                 });
             });
 
