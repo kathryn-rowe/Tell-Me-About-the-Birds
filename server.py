@@ -11,6 +11,8 @@ import secret_key
 
 from geojson import Feature, Point, FeatureCollection
 
+from datetime import datetime
+
 app = Flask(__name__)
 
 # Change this!
@@ -54,6 +56,7 @@ def create_geojson(sampling_points):
     for location in sampling_points:
         point = Point([location['long'], location['lat']])
         feature = Feature(geometry=point, properties={})
+        feature["properties"]["month"] = location['date']
         lat_long_features.append(feature)
 
     # Geojson FeatureCollection object
@@ -84,6 +87,7 @@ def render_map():
         location_dict = {}
         location_dict["long"] = location.longitude
         location_dict["lat"] = location.latitude
+        location_dict["date"] = location.observation_date.strftime('%B')
         sampling_points.append(location_dict)
 
     # Geojson of birding locations generated from eBird database
