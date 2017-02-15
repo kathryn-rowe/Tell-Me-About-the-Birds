@@ -111,11 +111,13 @@ def render_map():
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    return render_template("test.html",
+    return render_template("map.html",
                            longitude=longitude,
                            latitude=latitude,
                            mapbox_api_key=mapbox_api_key,
-                           birding_locations=birding_locations)
+                           birding_locations=birding_locations,
+                           bird_name=bird_name,
+                           county_name=county_name)
 
 
 if __name__ == "__main__":

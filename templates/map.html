@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title></title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+        <style>
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+    </head>
+    <body>
+
+    <style>
+    .map-overlay {
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        position: absolute;
+        width: 25%;
+        top: 0;
+        left: 0;
+        padding: 10px;
+    }
+
+    .map-overlay .map-overlay-inner {
+        background-color: #fff;
+        box-shadow:0 1px 2px rgba(0, 0, 0, 0.20);
+        border-radius: 3px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .map-overlay h2 {
+        line-height: 24px;
+        display: block;
+        margin: 0 0 10px;
+    }
+
+    .map-overlay .legend .bar {
+        height: 10px;
+        width: 100%;
+        background: linear-gradient(to right, #FCA107, #7F3121);
+    }
+
+    .map-overlay input {
+        background-color: transparent;
+        display: inline-block;
+        width: 100%;
+        position: relative;
+        margin: 0;
+        cursor: ew-resize;
+    }
+
+    .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    }
+    </style>
+
+    <div id='map'></div>
+
+    <div class='map-overlay top'>
+    
+        <div class='map-overlay-inner'>
+            <h2>{{ bird_name }} observations in {{ county_name }} County, 2016</h2>
+            <label for='slider' id='month'></label>
+            <input id='slider' type='range' min='0' max='11' step='1' value='0' />
+        </div>
+
+    </div>
+
+        <script>
+            mapboxgl.accessToken = '{{ mapbox_api_key }}';
+            var longitude = {{ longitude }}
+            var latitude = {{ latitude }}
+            var map = new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+                center: [longitude, latitude], // starting position
+                // center: [-121.403732, 40.492392],
+                zoom: 9 // starting zoom
+            });
+
+            // map.scrollZoom.disable();
+            
+            var months = [
+                'January',
+                'February',
+                'March',
+                'April',
+                'May',
+                'June',
+                'July',
+                'August',
+                'September',
+                'October',
+                'November',
+                'December'
+            ];
+
+            function filterBy(month) {
+
+                var filters = ['==', 'month', months[month]];
+                map.setFilter('obs_count', filters);
+
+                // Set the label to the month
+                document.getElementById('month').textContent = months[month];
+            }
+            
+            birding_locations = {{ birding_locations|safe }}
+
+            // //Wait until the map loads before adding layers
+            map.on('load', function () {
+
+            //     // console.log(data.features)
+
+                map.addSource("birding-locations", {
+                    "type": "geojson",
+                    "data": birding_locations,
+                });
+
+
+                map.addLayer({
+                    'id': 'obs_count',
+                    'type': 'circle',
+                    'source': "birding-locations",
+                    'paint': {
+                        'circle-radius': {
+                            property: 'obs_count',
+                            stops: [
+                                [0, 5],
+                                [10, 35]
+                            ]
+                        },
+                        'circle-color': {
+                            property: 'obs_count',
+                            stops: [
+                              [0, '#2DC4B2'],
+                              [1, '#3BB3C3'],
+                              [2, '#669EC4'],
+                              [3, '#8B88B6'],
+                              [4, '#A2719B'],
+                              [5, '#AA5E79']
+                            ]
+                        },
+                        'circle-opacity': 0.8
+                    }
+                }, 'admin-2-boundaries-dispute');
+
+            //         }, 'waterway-label');
+                    
+                filterBy(0);
+
+            //     //Connect slider with map; gets the current month as an integer
+                document.getElementById('slider').addEventListener('input', function(evt) {
+                    var month = parseInt(evt.target.value);
+                    filterBy(month);
+                });
+            });
+
+            map.on('click', function (e) {
+                var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count'] });
+
+            if (!features.length) {
+                return;
+            }
+
+            var feature = features[0];
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            var popup = new mapboxgl.Popup()
+                .setLngLat(feature.geometry.coordinates)
+                .setHTML('Number of species reported: ' + feature.properties.obs_count)
+                .addTo(map);
+            });
+
+            map.on('mousemove', function (e) {
+                var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count'] });
+                map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+            });
+
+            
+        </script>
+
+    </body>
+</html>
+
+{% endblock %}
