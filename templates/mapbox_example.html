@@ -98,11 +98,12 @@
             function filterBy(month) {
 
                 var filters = ['==', 'month', months[month]]; //datetime month
+                map.setFilter('unclustered-points', filters);
                 map.setFilter('cluster-0', filters);
-                // map.setFilter('cluster-1', filters);
-                // map.setFilter('cluster-2', filters);
+                map.setFilter('cluster-1', filters);
+                map.setFilter('cluster-2', filters);
                 // map.setFilter('unclustered-points', filters);
-                console.log(months[month])
+                // console.log(months[month])
 
                 // Set the label to the month
                 document.getElementById('month').textContent = months[month];
@@ -112,6 +113,7 @@
 
             // var data = birding_locations;
 
+            //Wait until the map loads before adding layers
             map.on('load', function () {
 
                 // console.log(data.features)
@@ -131,7 +133,7 @@
                 ];
 
                 layers.forEach(function (layer, i) {
-                    console.log("This is i:" + i)
+                    console.log("This is i:" + i + "and layer: " + layer)
                     map.addLayer({
                         "id": "cluster-" + i,
                         "type": "circle",
@@ -155,13 +157,14 @@
                         "paint": {
                             "circle-color": 'rgba(0,255,0,0.5)',
                             "circle-radius": 20,
-                            "circle-blur": 1
+                            "circle-blur": 0
                         },
                         "filter": ["!=", "cluster", true]
                     }, 'waterway-label');
                     
                 filterBy(0);
 
+                //Connect slider with map; gets the current month as an integer
                 document.getElementById('slider').addEventListener('input', function(evt) {
                     var month = parseInt(evt.target.value);
                     filterBy(month);

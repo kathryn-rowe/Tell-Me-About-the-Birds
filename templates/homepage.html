@@ -6,10 +6,16 @@
 
 <form action="/render_map">
 
-    <label for="location">Choose a location</label>
+    <label for="location">Choose a location and species</label>
         <select id="location" name="location">
             {% for county in counties %}
             <option value="{{ county }}">{{ county }}</option>
+            {% endfor %}
+        </select>
+
+        <select id="bird-species" name="bird-species">
+            {% for bird in species_list %}
+            <option value="{{ bird }}">{{ bird }}</option>
             {% endfor %}
         </select>
 

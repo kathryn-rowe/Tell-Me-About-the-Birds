@@ -30,14 +30,20 @@ county_location = {"Humboldt": (-123.86, 40.74),
 
 @app.route('/')
 def index():
-    """Homepage, choose a county."""
+    """Homepage, choose a county and species"""
 
     counties = []
     for county in county_location:
         counties.append(county)
 
+    bird_species = db.session.query(Species).all()
+    species_list = []
+    for bird in bird_species:
+        species_list.append(bird.common_name)
+
     return render_template("homepage.html",
-                           counties=counties)
+                           counties=counties,
+                           species_list=species_list)
 
 
 def get_county(county_name):
@@ -57,6 +63,9 @@ def create_geojson(sampling_points):
         point = Point([location['long'], location['lat']])
         feature = Feature(geometry=point, properties={})
         feature["properties"]["month"] = location['date']
+        feature["properties"]["day"] = location['day']
+        feature["properties"]["tax_num"] = location['species']
+        feature["properties"]["obs_count"] = location['obs_count']
         lat_long_features.append(feature)
 
     # Geojson FeatureCollection object
@@ -70,30 +79,39 @@ def render_map():
     """Receives user's choice of county and returns map with locations of eBird checklist submissions."""
 
     county_name = request.args.get("location")
-    # print "*********" + county_name
+    bird_name = request.args.get("bird-species")
 
     # CENTER map; get_county returns long, lat tuple.
     long_lat = get_county(county_name)
     longitude, latitude = long_lat
 
     # get long, lat, date information associated with the chosen county
-    county_info = db.session.query(SamplingEvent).filter_by(county=county_name).all()
+    # county_info = db.session.query(SamplingEvent).filter_by(county=county_name).all()
+    bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
+    bird_number = bird_info.taxonomic_num
+    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name, Observation.taxonomic_num == bird_number).all()
 
+    if bird_county == []:
+        flash("There are no recording for that species in that county. Please choose another bird.")
     # Long, lat for each checklist
     sampling_points = []
 
     # Generate sampling_points list from database
-    for location in county_info:
+    # for location in county_info:
+    for bird_location in bird_county:
         location_dict = {}
-        location_dict["long"] = location.longitude
-        location_dict["lat"] = location.latitude
-        location_dict["date"] = location.observation_date.strftime('%B')
+        location_dict["long"] = bird_location[1].longitude
+        location_dict["lat"] = bird_location[1].latitude
+        location_dict["date"] = bird_location[1].observation_date.strftime('%B')
+        location_dict["day"] = bird_location[1].observation_date.strftime('%d')
+        location_dict["species"] = bird_location[0].taxonomic_num
+        location_dict["obs_count"] = bird_location[0].observation_count
         sampling_points.append(location_dict)
 
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    return render_template("mapbox_example.html",
+    return render_template("test.html",
                            longitude=longitude,
                            latitude=latitude,
                            mapbox_api_key=mapbox_api_key,
