@@ -27,12 +27,10 @@ county_location = {"Humboldt": (-123.86, 40.74),
                    "San Francisco": (-122.44, 37.76),
                    "Monterey": (-121.89, 36.6)}
 
+@app.route("/get_api_key")
+def get_API_key():
 
-# @app.route("/get_api_key")
-# def get_API_key():
-
-#     return jsonify([mapbox_api_key])
-
+    return jsonify([mapbox_api_key])
 
 @app.route('/')
 def index():
@@ -87,18 +85,7 @@ def render_map():
     county_name = request.args.get("location")
     bird_name = request.args.get("bird-species")
 
-    session["county_name"] = county_name
-    session["bird_name"] = bird_name
-
-    return render_template("map.html")
-
-
-@app.route("/get_data.json")
-def get_data():
-
     # CENTER map; get_county returns long, lat tuple.
-    county_name = session["county_name"]
-    bird_name = session["bird_name"]
     long_lat = get_county(county_name)
     longitude, latitude = long_lat
 
@@ -110,8 +97,7 @@ def get_data():
 
     if bird_county == []:
         flash("There are no recording for that species in that county. Please choose another bird.")
-        return redirect('/')
-
+        return redirect ('/')
     # Long, lat for each checklist
     sampling_points = []
 
@@ -138,7 +124,13 @@ def get_data():
         "bird_name": bird_name,
         "county_name": county_name}
 
-    return jsonify(bird_data)
+    return render_template("map.html",
+                           longitude=longitude,
+                           latitude=latitude,
+                           mapbox_api_key=mapbox_api_key,
+                           birding_locations=birding_locations,
+                           bird_name=bird_name,
+                           county_name=county_name)
 
 
 @app.route('/melon-times.json')
@@ -202,6 +194,6 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run(host='0.0.0.0')

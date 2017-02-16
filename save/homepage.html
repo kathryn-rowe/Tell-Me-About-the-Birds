@@ -23,5 +23,16 @@
 
 </form>
 
+<script type="text/javascript">
+        var api_key = "";
+
+        function getApiKey() {
+            $.get("/get_api_key", function(results) {
+                api_key = results[0];
+
+            });
+        }
+
+        getApiKey();
 </script>
 {% endblock %}
