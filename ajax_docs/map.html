@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<html>
+    <head>
+        <meta charset='utf-8' />
+        <title></title>
+        <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+        <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+        <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+        <style>
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    </head>
+    <body id='body'>
+
+        <div id='map'></div>
+
+        <div class='map-overlay top'>
+        
+            <div class='map-overlay-inner'>
+                <h2>{{ session.bird_name }} observations in {{ session.county_name }} County, 2016</h2>
+                <label for='slider' id='month'></label>
+                <input id='slider' type='range' min='0' max='11' step='1' value='0' />
+            </div>
+
+        </div>
+        <script src="https://code.jquery.com/jquery.js"></script>
+
+        <script src="./static/map.js"></script>
+
+        <!-- <canvas id="buyers" width="600" height="400"></canvas> -->
+        
+
+    </body>
+</html>
+
+{% endblock %}

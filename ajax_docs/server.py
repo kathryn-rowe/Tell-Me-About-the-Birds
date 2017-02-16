@@ -2,7 +2,7 @@
 
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request, flash,
+from flask import (Flask, render_template, request, flash,
                    session, jsonify)
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -74,26 +74,18 @@ def create_geojson(sampling_points):
     return birding_locations
 
 
-@app.route("/render_map")
-def render_map():
-    """Receives user's choice of county and returns map with locations of eBird checklist submissions."""
+def query_species_county(county, species):
+    """Query DB to get data list for specified county and bird species selected."""
 
-    county_name = request.args.get("location")
-    bird_name = request.args.get("bird-species")
-
-    # CENTER map; get_county returns long, lat tuple.
-    long_lat = get_county(county_name)
-    longitude, latitude = long_lat
-
-    # get long, lat, date information associated with the chosen county
     # county_info = db.session.query(SamplingEvent).filter_by(county=county_name).all()
-    bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
+    bird_info = db.session.query(Species).filter_by(common_name=species).first()
     bird_number = bird_info.taxonomic_num
-    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name, Observation.taxonomic_num == bird_number).all()
+    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county, Observation.taxonomic_num == bird_number).all()
 
     if bird_county == []:
         flash("There are no recording for that species in that county. Please choose another bird.")
-    # Long, lat for each checklist
+
+    # Long, lat, date, day, species, and how many birds for each checklist
     sampling_points = []
 
     # Generate sampling_points list from database
@@ -108,69 +100,58 @@ def render_map():
         location_dict["obs_count"] = bird_location[0].observation_count
         sampling_points.append(location_dict)
 
+    return sampling_points
+
+
+@app.route("/get_api_key")
+def get_API_key():
+
+    return jsonify([mapbox_api_key])
+
+
+@app.route("/render_map")
+def render_map():
+    """returns map with locations of eBird checklist submissions."""
+
+    county_name = request.args.get("location")
+    bird_name = request.args.get("bird-species")
+
+    session["county_name"] = county_name
+    session["bird_name"] = bird_name
+
+    return render_template("map.html")
+
+
+@app.route("/get_lat_long")
+def get_lat_long():
+
+    # CENTER map; get_county returns long, lat tuple.
+    county_name = session["county_name"]
+    long_lat = get_county(county_name)
+    longitude, latitude = long_lat
+
+    location_dict = {"longitude": longitude,
+                     "latitude": latitude}
+
+    return jsonify(location_dict)
+
+
+@app.route("/get_data")
+def get_data():
+
+    bird_name = session["bird_name"]
+    county_name = session["county_name"]
+
+    #Query DB to get data list for specified county and bird species selected.
+    sampling_points = query_species_county(county_name, bird_name)
+
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    return render_template("map.html",
-                           longitude=longitude,
-                           latitude=latitude,
-                           mapbox_api_key=mapbox_api_key,
-                           birding_locations=birding_locations,
-                           bird_name=bird_name,
-                           county_name=county_name)
+    data_dict = {"bird_loc": birding_locations}
 
-
-@app.route('/melon-times.json')
-def melon_times_data():
-    """Return time series data of Melon Sales."""
-
-    data_dict = {
-        "labels": ["January", "February", "March", "April", "May", "June", "July"],
-        "datasets": [
-            {
-                "label": "Watermelon",
-                "fill": True,
-                "lineTension": 0.5,
-                "backgroundColor": "rgba(220,220,220,0.2)",
-                "borderColor": "rgba(220,220,220,1)",
-                "borderCapStyle": 'butt',
-                "borderDash": [],
-                "borderDashOffset": 0.0,
-                "borderJoinStyle": 'miter',
-                "pointBorderColor": "rgba(220,220,220,1)",
-                "pointBackgroundColor": "#fff",
-                "pointBorderWidth": 1,
-                "pointHoverRadius": 5,
-                "pointHoverBackgroundColor": "#fff",
-                "pointHoverBorderColor": "rgba(220,220,220,1)",
-                "pointHoverBorderWidth": 2,
-                "pointRadius": 3,
-                "pointHitRadius": 10,
-                "data": [65, 59, 80, 81, 56, 55, 40],
-                "spanGaps": False},
-            {
-                "label": "Cantaloupe",
-                "fill": True,
-                "lineTension": 0.5,
-                "backgroundColor": "rgba(151,187,205,0.2)",
-                "borderColor": "rgba(151,187,205,1)",
-                "borderCapStyle": 'butt',
-                "borderDash": [],
-                "borderDashOffset": 0.0,
-                "borderJoinStyle": 'miter',
-                "pointBorderColor": "rgba(151,187,205,1)",
-                "pointBackgroundColor": "#fff",
-                "pointBorderWidth": 1,
-                "pointHoverRadius": 5,
-                "pointHoverBackgroundColor": "#fff",
-                "pointHoverBorderColor": "rgba(151,187,205,1)",
-                "pointHoverBorderWidth": 2,
-                "pointHitRadius": 10,
-                "data": [28, 48, 40, 19, 86, 27, 90],
-                "spanGaps": False}
-        ]
-    }
     return jsonify(data_dict)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the
