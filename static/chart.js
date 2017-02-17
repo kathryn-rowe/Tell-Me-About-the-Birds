@@ -1,16 +1,15 @@
 "use strict"
 
-var buyerData = {
-            labels : ["January","February","March","April","May","June"],
-            datasets : [
-                {
-                    fillColor : "rgba(172,194,132,0.4)",
-                    strokeColor : "#ACC26D",
-                    pointColor : "#fff",
-                    pointStrokeColor : "#9DB86D",
-                    data : [203,156,99,251,305,247]
-                }
-            ]
-        }
-        var buyers = document.getElementById('buyers').getContext('2d');
-        new Chart(buyers).Line(buyerData);
+var options = {
+  responsive: true
+};
+
+var ctx_line = $("#lineChart").get(0).getContext("2d");
+
+$.get("/melon-times.json", function (data) {
+  var myLineChart = Chart.Line(ctx_line, {
+                                data: data,
+                                options: options
+                            });
+  $("#lineLegend").html(myLineChart.generateLegend());
+});

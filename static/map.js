@@ -99,7 +99,6 @@ function renderMap(api_key, longitude, latitude, birding_data){
 function getData() {
     $.get("/get_data.json", function(results) {
         var api_key = results.mapbox_api_key;
-        console.log(api_key);
         var latitude = results.latitude;
         var longitude = results.longitude;
         var birding_data = results.birding_locations;

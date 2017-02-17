@@ -130,6 +130,8 @@ def get_data():
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
+    print birding_locations
+
     bird_data = {
         "longitude": longitude,
         "latitude": latitude,
@@ -145,8 +147,21 @@ def get_data():
 def melon_times_data():
     """Return time series data of Melon Sales."""
 
+    new_answer = Observation.query.filter(Observation.taxonomic_num == 10874, Observation.observation_count != 'X')
+    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.observation_date == date,
+                                                                                          Observation.taxonomic_num == bird_number,
+                                                                                          Observation.observation_count != 'X').all()
+
+    for something in bird_county:
+        empty_dict = {}
+        empty_dict['Month'] = something[1].observation_date.strftime('%B')
+    *****DO SOMETHING With THIS!!!
+    count = 0
+    for x in new_answer:
+        count += int(x.observation_count)
+
     data_dict = {
-        "labels": ["January", "February", "March", "April", "May", "June", "July"],
+        "labels": ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
         "datasets": [
             {
                 "label": "Watermelon",
