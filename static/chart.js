@@ -6,7 +6,7 @@ var options = {
 
 var ctx_line = $("#lineChart").get(0).getContext("2d");
 
-$.get("/melon-times.json", function (data) {
+$.get("/bird_per_month.json", function (data) {
   var myLineChart = Chart.Line(ctx_line, {
                                 data: data,
                                 options: options

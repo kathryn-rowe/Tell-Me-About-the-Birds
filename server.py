@@ -131,7 +131,7 @@ def get_data():
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    print birding_locations
+    # print birding_locations
 
     bird_data = {
         "longitude": longitude,
@@ -144,12 +144,13 @@ def get_data():
     return jsonify(bird_data)
 
 
-@app.route('/melon-times.json')
-def melon_times_data():
+@app.route('/bird_per_month.json')
+def bird_per_month_data():
     """Return time series data of Melon Sales."""
 
     taxonomic_num = session["bird_num"]
     bird_name = session["bird_name"]
+    print bird_name + "****************************"
 
     # new_answer = Observation.query.filter(Observation.taxonomic_num == taxonomic_num, Observation.observation_count != 'X')
     bird_date = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(Observation.taxonomic_num == taxonomic_num,
