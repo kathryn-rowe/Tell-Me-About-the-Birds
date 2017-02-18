@@ -40,6 +40,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
         map.addSource("birding-locations", {
             "type": "geojson",
             "data": birding_data,
+            "buffer": 25,
         });
         map.addLayer({
             'id': 'obs_count',
@@ -49,13 +50,18 @@ function renderMap(api_key, longitude, latitude, birding_data){
                 'circle-radius': {
                     property: 'obs_count',
                     stops: [
-                        [0, 5],
-                        [10, 35]
+                        [0, 4],
+                        [5, 9],
+                        [10, 14],
+                        [15, 19],
+                        [20, 24],
+                        [25, 29],
                     ]
                 },
                 'circle-color': {
                     property: 'obs_count',
                     stops: [
+                      // ['X', '#000000'],
                       [0, '#2DC4B2'],
                       [1, '#3BB3C3'],
                       [2, '#669EC4'],
@@ -86,7 +92,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
     // based on the feature found.
     var popup = new mapboxgl.Popup()
         .setLngLat(feature.geometry.coordinates)
-        .setHTML('Number of species reported: ' + feature.properties.obs_count)
+        .setHTML('Number of individuals reported: ' + feature.properties.obs_count)
         .addTo(map);
     });
     map.on('mousemove', function (e) {

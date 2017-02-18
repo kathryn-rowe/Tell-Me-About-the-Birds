@@ -146,15 +146,17 @@ def get_data():
 
 @app.route('/bird_per_month.json')
 def bird_per_month_data():
-    """Return time series data of Melon Sales."""
+    """Return how many total per species seen each month."""
 
+    county_name = session["county_name"]
     taxonomic_num = session["bird_num"]
     bird_name = session["bird_name"]
     print bird_name + "****************************"
 
     # new_answer = Observation.query.filter(Observation.taxonomic_num == taxonomic_num, Observation.observation_count != 'X')
     bird_date = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(Observation.taxonomic_num == taxonomic_num,
-                                                                                        Observation.observation_count != 'X').all()
+                                                                                        Observation.observation_count != 'X',
+                                                                                        SamplingEvent.county == county_name).all()
 
     sum_per_month = {"July": 0, "August": 0, "September": 0, "October": 0, "November": 0, "December": 0}
 
