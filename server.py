@@ -4,6 +4,7 @@ from jinja2 import StrictUndefined
 
 from flask import (Flask, render_template, redirect, request, flash,
                    session, jsonify)
+
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import Species, SamplingEvent, Observation, connect_to_db, db
@@ -11,7 +12,7 @@ import secret_key
 
 from geojson import Feature, Point, FeatureCollection
 
-from datetime import datetime
+# from datetime import datetime
 
 app = Flask(__name__)
 
@@ -28,12 +29,6 @@ county_location = {"Humboldt": (-123.86, 40.74),
                    "Monterey": (-121.89, 36.6)}
 
 
-# @app.route("/get_api_key")
-# def get_API_key():
-
-#     return jsonify([mapbox_api_key])
-
-
 @app.route('/')
 def index():
     """Homepage, choose a county and species"""
@@ -43,6 +38,7 @@ def index():
         counties.append(county)
 
     bird_species = db.session.query(Species).all()
+
     species_list = []
     for bird in bird_species:
         species_list.append(bird.common_name)
@@ -95,20 +91,25 @@ def render_map():
 
 @app.route("/get_data.json")
 def get_data():
+    """ Return bird species, totals, location to map """
 
-    # CENTER map; get_county returns long, lat tuple.
     county_name = session["county_name"]
     bird_name = session["bird_name"]
+
+    # CENTER map; get_county returns long, lat tuple.
     long_lat = get_county(county_name)
     longitude, latitude = long_lat
 
-    # get long, lat, date information associated with the chosen county
-    # county_info = db.session.query(SamplingEvent).filter_by(county=county_name).all()
+    # query for the taxonmic number of the chosen species
     bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
     bird_number = bird_info.taxonomic_num
     session["bird_num"] = bird_number
-    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name, Observation.taxonomic_num == bird_number).all()
 
+    # find bird totals, location, species based on the chosen county
+    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
+                                                                                          Observation.taxonomic_num == bird_number).all()
+
+    # not all birds are seen at each location
     if bird_county == []:
         flash("There are no recording for that species in that county. Please choose another bird.")
         return redirect('/')
@@ -131,8 +132,7 @@ def get_data():
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
-    # print birding_locations
-
+    # send all this information to website using json
     bird_data = {
         "longitude": longitude,
         "latitude": latitude,
@@ -146,25 +146,28 @@ def get_data():
 
 @app.route('/bird_per_month.json')
 def bird_per_month_data():
-    """Return how many total per species seen each month."""
+    """Return how many total per species seen each month for graph."""
 
     county_name = session["county_name"]
     taxonomic_num = session["bird_num"]
     bird_name = session["bird_name"]
-    print bird_name + "****************************"
+    # print bird_name + "****************************"
 
-    # new_answer = Observation.query.filter(Observation.taxonomic_num == taxonomic_num, Observation.observation_count != 'X')
+    # returns total amount of specified species seen per checklist, where total is not indicated by present, or 'x'
     bird_date = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(Observation.taxonomic_num == taxonomic_num,
                                                                                         Observation.observation_count != 'X',
                                                                                         SamplingEvent.county == county_name).all()
 
+    # X-axis labels
     sum_per_month = {"July": 0, "August": 0, "September": 0, "October": 0, "November": 0, "December": 0}
 
+    # gets total number of bird species seen per month
     for label in sum_per_month:
         for observation in bird_date:
             if observation[1].observation_date.strftime('%B') == label:
                 sum_per_month[label] += int(observation[0].observation_count)
 
+    # returned totals have to be ordered by month
     month_totals = [sum_per_month["July"],
                     sum_per_month["August"],
                     sum_per_month["September"],
@@ -172,6 +175,7 @@ def bird_per_month_data():
                     sum_per_month["November"],
                     sum_per_month["December"]]
 
+    # create chart/graph showing total species per month
     data_dict = {
         "labels": ["July", "Aug", "Sept", "Oct", "Nov", "Dec"],
         "datasets": [
