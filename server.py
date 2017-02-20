@@ -49,7 +49,13 @@ def index():
 
 
 def get_county(county_name):
-    """ Return longitude and latitude of chosen county. Value used to center map """
+    """ Return longitude and latitude of chosen county. Value used to center map.
+
+    >>> get_county("Humboldt")
+    (-123.86, 40.74)
+
+    >>> get_county("Santa Monica")
+    """
 
     for county in county_location:
         if county == county_name:
@@ -199,7 +205,8 @@ def bird_per_month_data():
                 "pointRadius": 3,
                 "pointHitRadius": 10,
                 "data": month_totals,
-                "spanGaps": False},
+                "spanGaps": False,
+                }
         ]
     }
 

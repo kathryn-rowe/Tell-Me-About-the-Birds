@@ -5,19 +5,25 @@ body {
 
 #map { 
     height: 500px;
-    top:0; 
-    width:100%; 
+/*    top:0; */
+    width:100%;
+}
+
+#top-row{
+    padding-right: 0px;
+    padding-left: 0px;
 }
 
 #lineChart {
-    height: 50%;
+    height: 500px;
     width: 100%;
 }
 
 .map-overlay {
     font: 12px/18px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     position: absolute;
-    width: 25%;
+    display: inline-block;
+    width: 35%;
     top: 0;
     left: 0;
     padding: 10px;
@@ -38,11 +44,11 @@ body {
     margin: 0 0 10px;
 }
 
-.map-overlay .legend .bar {
+/*.map-overlay .legend .bar {
     height: 10px;
     width: 100%;
     background: linear-gradient(to right, #FCA107, #7F3121);
-}
+}*/
 
 .map-overlay input {
     background-color: transparent;
@@ -59,9 +65,10 @@ body {
 }
 
 
-.chart-legend li span {
+/*.chart-legend li span {
     display: inline-block;
     width: 12px;
     height: 12px;
     margin-right: 5px;
 }
+*/

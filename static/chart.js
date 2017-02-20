@@ -11,5 +11,5 @@ $.get("/bird_per_month.json", function (data) {
                                 data: data,
                                 options: options
                             });
-  $("#lineLegend").html(myLineChart.generateLegend());
+  // $("#lineLegend").html(myLineChart.generateLegend());
 });

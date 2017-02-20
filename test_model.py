@@ -1,12 +1,12 @@
 """Models and database functions for Kate's project."""
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
-
 ##############################################################################
-# Model definitions
+
 
 class Species(db.Model):
     """Species of birds."""
@@ -75,21 +75,32 @@ class Observation(db.Model):
                                                                       self.observation_count)
 
 
-##############################################################################
-# Helper functions
-
-
-def connect_to_db(app, db_uri="postgresql:///ebird_CA_data"):
+def connect_to_db(app, db_uri="postgresql:///testdb"):
     """Connect the database to our Flask app."""
 
-    # Configure to use our PstgreSQL database
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ebird_data'
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-    app.config['SQLALCHEMY_ECHO'] = True
-    # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
 
+##############################################################################
+
+
+def example_data():
+    """Create example data for the test database."""
+
+    # bird1 = Species(taxonomic_num=27938, common_name="Yellow-rumped Warbler", scientific_name="Setophaga coronata")
+    # bird2 = Species(taxonomic_num=29580, common_name="Spotted Towhee", scientific_name="Pipilo maculatus")
+    bird3 = Species(taxonomic_num=29864, common_name="Song Sparrow", scientific_name="Melospiza melodia")
+    # checklist1 = SamplingEvent(checklist="S17184369", latitude=36.2819875, longitude=-121.8595805, county="Monterey", observation_date=2/24/2014, all_species=1)
+    # checklist2 = SamplingEvent(checklist="S17184369", latitude=36.2819875, longitude=-121.8595805, county="Monterey", observation_date=2/24/2014, all_species=1)
+    checklist3 = SamplingEvent(checklist="S17184369", latitude=36.2819875, longitude=-121.8595805, county="Monterey", observation_date=datetime.strptime("2/24/2014", '%m/%d/%Y'), all_species=1)
+    # obs1 = Observation(global_id="URN:CornellLabOfOrnithology:EBIRD:OBS236783548", checklist="S17184369", taxonomic_num=27938, observation_count="24")
+    # obs2 = Observation(global_id="URN:CornellLabOfOrnithology:EBIRD:OBS236783543", checklist="S17184369", taxonomic_num=29580, observation_count="3")
+    obs3 = Observation(global_id="URN:CornellLabOfOrnithology:EBIRD:OBS236783532", checklist="S17184369", taxonomic_num=29864, observation_count="2")
+
+    # db.session.add_all([bird1, bird2, bird3, checklist1, checklist2, checklist3, obs1, obs2, obs3])
+    db.session.add_all([bird3, checklist3, obs3])
+    db.session.commit()
 
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will leave
