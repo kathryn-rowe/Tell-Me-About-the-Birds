@@ -64,6 +64,15 @@ body {
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
+.axis--x path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: blue;
+  stroke-width: 1.5px;
+}
 
 /*.chart-legend li span {
     display: inline-block;

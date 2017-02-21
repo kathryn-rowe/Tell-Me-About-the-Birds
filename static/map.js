@@ -29,7 +29,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
     ];
     function filterBy(month) {
         var filters = ['==', 'month', months[month]];
-        map.setFilter('obs_count', filters);
+        map.setFilter('bird_count', filters);
         // Set the label to the month
         document.getElementById('month').textContent = months[month];
     }
@@ -43,7 +43,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
             "buffer": 25,
         });
         map.addLayer({
-            'id': 'obs_count',
+            'id': 'bird_count',
             'type': 'circle',
             'source': "birding-locations",
             'paint': {
@@ -71,9 +71,21 @@ function renderMap(api_key, longitude, latitude, birding_data){
                     ]
                 },
                 'circle-opacity': 0.8
-            }
+            },
+            'filter': ['!=', 'obs_count', 'X']
         }, 'admin-2-boundaries-dispute');
-    //         }, 'waterway-label');
+
+        map.addLayer({
+            'id': 'x_count',
+            'type': 'circle',
+            'source': "birding-locations",
+            'paint': {
+                'circle-radius': 20,
+                'circle-color': '#000000',
+                'circle-opacity': 0.8
+            },
+            'filter': ['==', 'obs_count', 'X']
+        }, 'admin-2-boundaries-dispute');
             
         filterBy(0);
     //     //Connect slider with map; gets the current month as an integer
@@ -83,7 +95,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
         });
     });
     map.on('click', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count', 'x_count'] });
     if (!features.length) {
         return;
     }
@@ -96,7 +108,7 @@ function renderMap(api_key, longitude, latitude, birding_data){
         .addTo(map);
     });
     map.on('mousemove', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['obs_count', 'x_count'] });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     });
 };

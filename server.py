@@ -2,8 +2,8 @@
 
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request, flash,
-                   session, jsonify)
+from flask import (Flask, render_template, redirect, request,
+                   session, jsonify, g)
 
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -16,6 +16,8 @@ from geojson import Feature, Point, FeatureCollection
 
 app = Flask(__name__)
 
+JS_TESTING_MODE = False
+
 # Change this!
 app.secret_key = secret_key.flask_secret_key
 mapbox_api_key = secret_key.mapbox_api_key
@@ -27,6 +29,11 @@ county_location = {"Humboldt": (-123.86, 40.74),
                    "Yuba": (-121.40, 39.28),
                    "San Francisco": (-122.44, 37.76),
                    "Monterey": (-121.89, 36.6)}
+
+
+@app.before_request
+def add_tests():
+    g.jasmine_tests = JS_TESTING_MODE
 
 
 @app.route('/')
@@ -116,9 +123,9 @@ def get_data():
                                                                                           Observation.taxonomic_num == bird_number).all()
 
     # not all birds are seen at each location
-    if bird_county == []:
-        flash("There are no recording for that species in that county. Please choose another bird.")
-        return redirect('/')
+    # if bird_county == []:
+    #     flash("There are no recording for that species in that county. Please choose another bird.")
+    #     return redirect('/')
 
     # Long, lat for each checklist
     sampling_points = []
@@ -222,5 +229,9 @@ if __name__ == "__main__":
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
+
+    import sys
+    if sys.argv[-1] == "jstest":
+        JS_TESTING_MODE = True
 
     app.run(host='0.0.0.0')
