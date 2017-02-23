@@ -69,11 +69,38 @@ def get_county(county_name):
             return county_location[county]
 
 
+@app.route("/filter_geojson", methods=['POST'])
+def filter_geojson():
+
+    data = request.get_json()
+
+    data_list = data['data']
+
+    # for data in data_list:
+    #     print data
+
+    bird_data = []
+
+    bird_data.append(data_list)
+    # print bird_data
+
+    birdDataMonth = FeatureCollection(bird_data)
+    # print bird_data_month
+
+    bird_json = {
+        'birdDataMonth': birdDataMonth
+    }
+
+    # return "string"
+    return jsonify(bird_json)
+
+
 def create_geojson(sampling_points):
     """Create a geojson object for input list from in the choosen county"""
 
     lat_long_features = []
 
+    # for each location object, use the data to populate a feature
     for location in sampling_points:
         point = Point([location['long'], location['lat']])
         feature = Feature(geometry=point, properties={})

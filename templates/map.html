@@ -9,16 +9,16 @@
     </head>
     
     <body>
-        <div class="container-fluid">
+        <div class="container">
             <div class="row">
                 
-                <div id="top-row" class="col-xs-6 col-md-6 col-lg-6" align="left">
+                <div id="top-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
                     <div id='map'></div>
 
                     <div class='map-overlay top'>
                         <div class='map-overlay-inner'>
                             <h2>{{ session.bird_name }} Observations in {{ session.county_name }} County, 2016</h2>
-                            <label for='slider' id='month'></label>
+                            <label for='slider' id='month'>July</label>
                             <input id='slider' type='range' min='0' max='11' step='1' value='0' />
                         </div>
                     </div>
@@ -26,30 +26,21 @@
                     <script src="./static/map.js"></script>
                 </div>
 
-                <div class="col-xs-6 col-md-6 col-lg-6" align="center">
+<!--                 <div class="col-xs-6 col-md-6 col-lg-6" align="center">
                     <canvas id="lineChart"></canvas>
                     <div id="lineLegend" class="chart-legend"></div>
                     <script src="https://code.jquery.com/jquery.js"></script>
                     <script src="./static/chart.js"></script>
-                </div>
+                </div> -->
             </div>
 
-<!--             <div class="row">
-                <div class='col-xs-12 col-md-12 col-lg-12'>
-                    <p> 
-                    <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> Award Winning <br>
-                    Don't take our word for it! 
-                    </p>
-
-                </div>
-            </div> -->
             <div class="row">
                 
-                <div id="top-row" class="col-xs-6 col-md-6 col-lg-6" align="left">
+                <div id="another-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
 
-                    <svg width="960" height="500"></svg>
-                    <script src="//d3js.org/d3.v4.min.js"></script>
-                    <script src="./static/d3_line.js"></script>
+                    <svg id="D3Chart" width="960" height="500"></svg>
+                    <script src="https://d3js.org/d3.v4.min.js"></script>
+                    <script src="./static/D3_line_chart.js"></script>
                 </div>
             </div>
         </div>        

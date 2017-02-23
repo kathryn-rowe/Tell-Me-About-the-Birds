@@ -73,7 +73,11 @@ body {
   stroke: blue;
   stroke-width: 1.5px;
 }
-
+#D3Chart {
+    height: 500px;
+    width: 100%;
+    position: absolute;
+}
 /*.chart-legend li span {
     display: inline-block;
     width: 12px;
