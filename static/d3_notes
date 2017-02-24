@@ -11,3 +11,39 @@ var data = [
 var line = d3.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.value); });
+
+***************************
+
+.range([closer_to_the_origin, further_from_the_origin])
+
+***************************
+x.domain(d3.extent(data, function(d) { return d.date; }));
+
+Looking at the first part that is setting up the x axis values, it is saying that the domain for the x axis values will be determined by the d3.extent function which in turn is acting on a separate function which looks through all the 'date' values that occur in the 'data' array. In thins case the .extent function returns the minimum and maximum value in the given array.
+So function(d) { return d.date; } returns all the 'date' values in 'data'. This is then passed to...
+The .extent function that finds the maximum and minimum values in the array and then...
+The .domain function which returns those maximum and minimum values to D3 as the range for the x axis.
+
+***************************
+d3.min(cities, function(c) { return d3.min(c.values, function(d) { return d.temperature; }); })
+
+Because the range of values desired on the y axis goes from 0 to the maximum in the data range, that's exactly what we tell D3. The '0' in the .domain function is the starting point and the finishing point is found by employing a separate function that sorts through all the 'close' values in the 'data' array and returns the largest one. 
+
+***************************
+
+In SVG land, a g element is a group element. Group elements are invisible, unlike line, rect, and circle, and they have no visual presence themselves. Yet they help us in two ways: first, g elements can be used to contain (or “group”) other elements, which keeps our code nice and tidy. Second, we can apply transformations to g elements, which affects how visual elements within that group (such as lines, rects, and circles) are rendered. 
+
+***************************
+
+var smallData = data.map(function(d,i) {
+
+  return {
+    name: d.city.toUpperCase(),
+    index: i + 1,
+    rounded_area: Math.round(d.land_area)
+  };
+});
+console.log(data[0]);
+console.log(smallData[0]);
+=> {city: "seattle", state: "WA", population: 652405, land_area: 83.9}
+  {name: "SEATTLE", index: 1, rounded_area: 84}

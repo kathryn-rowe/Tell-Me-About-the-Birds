@@ -69,30 +69,30 @@ def get_county(county_name):
             return county_location[county]
 
 
-@app.route("/filter_geojson", methods=['POST'])
-def filter_geojson():
+# @app.route("/filter_geojson", methods=['POST'])
+# def filter_geojson():
 
-    data = request.get_json()
+#     data = request.get_json()
 
-    data_list = data['data']
+#     data_list = data['data']
 
-    # for data in data_list:
-    #     print data
+#     # for data in data_list:
+#     #     print data
 
-    bird_data = []
+#     bird_data = []
 
-    bird_data.append(data_list)
-    # print bird_data
+#     bird_data.append(data_list)
+#     # print bird_data
 
-    birdDataMonth = FeatureCollection(bird_data)
-    # print bird_data_month
+#     birdDataMonth = FeatureCollection(bird_data)
+#     # print bird_data_month
 
-    bird_json = {
-        'birdDataMonth': birdDataMonth
-    }
+#     bird_json = {
+#         'birdDataMonth': birdDataMonth
+#     }
 
-    # return "string"
-    return jsonify(bird_json)
+#     # return "string"
+#     return jsonify(bird_json)
 
 
 def create_geojson(sampling_points):
@@ -185,7 +185,7 @@ def get_data():
 
 
 @app.route('/bird_per_month.json')
-def bird_per_month_data():
+def bird_per_month():
     """Return how many total per species seen each month for graph."""
 
     county_name = session["county_name"]
@@ -245,6 +245,50 @@ def bird_per_month_data():
     }
 
     return jsonify(data_dict)
+
+
+@app.route('/birds_per_month.json')
+def bird_per_month_data():
+    """Return how many total per species seen each month for graph."""
+
+    county_name = session["county_name"]
+
+    birds_per_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
+                                                                                               Observation.observation_count != 'X').all()
+
+    birds_in_county = []
+
+    for bird in birds_per_county:
+        bird_num = bird[0].taxonomic_num
+        if bird_num not in birds_in_county:
+            birds_in_county.append(bird_num)
+
+    birds_in_graph = []
+    # GOAL: [{id:"Robin", 
+            # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]},
+            # {id:"Jay", 
+            # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]}
+            # ]
+
+    months = ["July", "August", "September", "October", "November", "December"]
+    for number in birds_in_county:
+        bird_dict = {}
+        bird_name = db.session.query(Species).filter(Species.taxonomic_num == number).first()
+        bird_name = bird_name.common_name
+        bird_dict["id"] = bird_name
+        values = []
+        for month in months:
+            value_dict = {}
+            value_dict["month"] = month
+            value_dict["total"] = 0
+            for observation in birds_per_county:
+                if observation[1].observation_date.strftime('%B') == month and observation[0].taxonomic_num == number:
+                    value_dict["total"] += int(observation[0].observation_count)
+            values.append(value_dict)
+        bird_dict["values"] = values
+        birds_in_graph.append(bird_dict)
+
+    return jsonify(birds_in_graph)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

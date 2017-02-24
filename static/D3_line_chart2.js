@@ -27,25 +27,19 @@ var line = d3.line()
     .y(function(d) { return y(d.temperature); });
 
 d3.json('/birds_per_month.json', function(error, data){
-  if (error) throw error;
-  data = data;
-  console.log(data);
-});
 
-d3.csv('static/data.csv', type, function(error, data) {
-  
+// d3.csv('static/data.csv', type, function(error, data) {
   if (error) throw error;
 
-  var cities = data.columns.slice(1).map(function(id) {
-    return {
-      id: id,
-      values: data.map(function(d) {
-        return {date: d.date, temperature: d[id]};
-      })
-    };
-  });
-  console.log(cities);
-  console.log(data);
+  // var cities = data.columns.slice(1).map(function(id) {
+  //   // return {
+  //   //   id: id,
+  //   //   // values: data.map(function(d) {
+  //   //   //   return {date: d.date, temperature: d[id]};
+  //   //   // })
+  //   // };
+  // });
+  console.log(cities)
   // returned an object with an ID for the city and 366 arrays of the date:value, temperature:value pairs in an object
   // {id:"New York", [{"date": "Sat Oct 01 2011 00:00:00 GMT-0700 (Pacific Daylight Time)", "temperature": "63.4"}], [{"date": "Sun Oct 02 2011 00:00:00 GMT-0700 (Pacific Daylight Time", "temperature": "58"}]}
 
