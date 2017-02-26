@@ -26,11 +26,11 @@ var line = d3.line()
     // y value of the line is temperature
     .y(function(d) { return y(d.temperature); });
 
-d3.json('/birds_per_month.json', function(error, data){
-  if (error) throw error;
-  data = data;
-  console.log(data);
-});
+// d3.json('/birds_per_month.json', function(error, data){
+//   if (error) throw error;
+//   data = data;
+//   console.log(data);
+// });
 
 d3.csv('static/data.csv', type, function(error, data) {
   

@@ -76,6 +76,38 @@ class Observation(db.Model):
                                                                       self.observation_count)
 
 
+class MonthlyAvg(db.Model):
+    """Montly observations per month per species"""
+
+    __tablename__ = "monthly_avg"
+
+    sum_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    common_name = db.Column(db.String(300))
+    taxonomic_num = db.Column(db.Float, db.ForeignKey('species.taxonomic_num'), nullable=False)
+    county = db.Column(db.String(50), nullable=False)
+    # janAvg = db.Column(db.Integer, nullable=False)
+    # febAvg = db.Column(db.Integer, nullable=False)
+    # marAvg = db.Column(db.Integer, nullable=False)
+    # aprilAvg = db.Column(db.Integer, nullable=False)
+    # mayAvg = db.Column(db.Integer, nullable=False)
+    # juneAvg = db.Column(db.Integer, nullable=False)
+    julyAvg = db.Column(db.Integer, nullable=False)
+    augAvg = db.Column(db.Integer, nullable=False)
+    septAvg = db.Column(db.Integer, nullable=False)
+    octAvg = db.Column(db.Integer, nullable=False)
+    novAvg = db.Column(db.Integer, nullable=False)
+    decAvg = db.Column(db.Integer, nullable=False)
+
+    species_rel = db.relationship("Species")
+    # sampling_rel = db.relationship("SamplingEvent")
+
+    def __repr__(self):
+
+        return "<Taxanomic Num=%s Species=%s County=%s>" % (self.taxonomic_num,
+                                                            self.common_name,
+                                                            self.county)
+
+
 def example_data():
     """Create example data for the test database."""
 

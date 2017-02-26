@@ -2,15 +2,26 @@
 
 from jinja2 import StrictUndefined
 
-from flask import (Flask, render_template, redirect, request,
-                   session, jsonify, g)
+from flask import (Flask,
+                   render_template,
+                   request, session,
+                   jsonify,
+                   g)
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import Species, SamplingEvent, Observation, connect_to_db, db
+from model import (Species,
+                   SamplingEvent,
+                   Observation,
+                   MonthlyAvg,
+                   connect_to_db,
+                   db)
+
 import secret_key
 
-from geojson import Feature, Point, FeatureCollection
+from geojson import (Feature,
+                     Point,
+                     FeatureCollection)
 
 # from datetime import datetime
 
@@ -18,7 +29,6 @@ app = Flask(__name__)
 
 JS_TESTING_MODE = False
 
-# Change this!
 app.secret_key = secret_key.flask_secret_key
 mapbox_api_key = secret_key.mapbox_api_key
 
@@ -253,40 +263,32 @@ def bird_per_month_data():
 
     county_name = session["county_name"]
 
-    birds_per_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
-                                                                                               Observation.observation_count != 'X').all()
+    print "line 268******************"
 
-    birds_in_county = []
-
-    for bird in birds_per_county:
-        bird_num = bird[0].taxonomic_num
-        if bird_num not in birds_in_county:
-            birds_in_county.append(bird_num)
-
-    birds_in_graph = []
-    # GOAL: [{id:"Robin", 
+    birds_in_graph = {}
+    # GOAL: [{id:"Robin",
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]},
-            # {id:"Jay", 
+            # {id:"Jay",
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]}
             # ]
 
+    monthly_avgs = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county_name).all()
+
     months = ["July", "August", "September", "October", "November", "December"]
-    for number in birds_in_county:
-        bird_dict = {}
-        bird_name = db.session.query(Species).filter(Species.taxonomic_num == number).first()
-        bird_name = bird_name.common_name
-        bird_dict["id"] = bird_name
-        values = []
+
+    for avg in monthly_avgs:
+        birds_in_graph["id"] = avg.common_name
+        birds_in_graph["values"] = []
         for month in months:
-            value_dict = {}
-            value_dict["month"] = month
-            value_dict["total"] = 0
-            for observation in birds_per_county:
-                if observation[1].observation_date.strftime('%B') == month and observation[0].taxonomic_num == number:
-                    value_dict["total"] += int(observation[0].observation_count)
-            values.append(value_dict)
-        bird_dict["values"] = values
-        birds_in_graph.append(bird_dict)
+            values = {}
+            if month != "July" or month != "September":
+                month = month[:3]
+            else:
+                month = month[:4]
+            values["month"] = month
+            month = month.lower() + "Avg"
+            values["total"] = avg.month
+            birds_in_graph["values"].append(values)
 
     return jsonify(birds_in_graph)
 

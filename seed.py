@@ -1,4 +1,4 @@
-from model import Species, SamplingEvent, Observation
+from model import Species, SamplingEvent, Observation, MonthlyAvg
 from datetime import datetime
 
 from model import connect_to_db, db
@@ -154,19 +154,84 @@ def load_observation():
         # Commit work
         db.session.commit()
 
-# taken from ratings exercise -- do I need this????
-# def set_val_user_id():
-#     """Set value for the next user_id after seeding database"""
 
-#     # Get the Max user_id in the database
-#     result = db.session.query(func.max(User.user_id)).one()
-#     max_id = int(result[0])
+def get_month_avg(county, tax_num):
+    """Find the monthly averages for the given county and bird species"""
 
-#     # Set the value for the next user_id to be max_id + 1
-#     query = "SELECT setval('users_user_id_seq', :new_id)"
-#     db.session.execute(query, {'new_id': max_id + 1})
-#     db.session.commit()
+    bird_date = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(Observation.taxonomic_num == tax_num,
+                                                                                        Observation.observation_count != 'X',
+                                                                                        SamplingEvent.county == county).all()
 
+    sum_per_month = {"January": 0, "February": 0, "March": 0, "April": 0, "May": 0, "June": 0,
+                     "July": 0, "August": 0, "September": 0, "October": 0, "November": 0, "December": 0}
+
+    # gets total number of bird species seen per month
+    for label in sum_per_month:
+        for observation in bird_date:
+            if observation[1].observation_date.strftime('%B') == label:
+                sum_per_month[label] += int(observation[0].observation_count)
+
+    return sum_per_month
+
+
+def load_monthly_avgs():
+    """Load monthly observations per species per month"""
+
+    print "***Monthly Avgs.***"
+
+    counties = ["Humboldt", "Yuba", "San Francisco", "Monterey"]
+
+    for county in counties:
+        birds_per_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county,
+                                                                                                   Observation.observation_count != 'X').all()
+        county = county
+        birds_in_county = set()
+
+        for bird in birds_per_county:
+            bird_num = bird[0].taxonomic_num
+            if bird_num not in birds_in_county:
+                birds_in_county.add(bird_num)
+                taxonomic_num = bird_num
+                bird_name = db.session.query(Species).filter(Species.taxonomic_num == taxonomic_num).first()
+                common_name = bird_name.common_name
+
+                sum_per_month = get_month_avg(county, taxonomic_num)
+
+                janAvg = sum_per_month["January"]
+                febAvg = sum_per_month["February"]
+                marAvg = sum_per_month["March"]
+                aprilAvg = sum_per_month["April"]
+                mayAvg = sum_per_month["May"]
+                juneAvg = sum_per_month["June"]
+                julyAvg = sum_per_month["July"]
+                augAvg = sum_per_month["August"]
+                septAvg = sum_per_month["September"]
+                octAvg = sum_per_month["October"]
+                novAvg = sum_per_month["November"]
+                decAvg = sum_per_month["December"]
+
+                monthlyAvg = MonthlyAvg(county=county,
+                                        taxonomic_num=taxonomic_num,
+                                        common_name=common_name,
+                                        janAvg=janAvg,
+                                        febAvg=febAvg,
+                                        marAvg=marAvg,
+                                        aprilAvg=aprilAvg,
+                                        mayAvg=mayAvg,
+                                        juneAvg=juneAvg,
+                                        julyAvg=julyAvg,
+                                        augAvg=augAvg,
+                                        septAvg=septAvg,
+                                        octAvg=octAvg,
+                                        novAvg=novAvg,
+                                        decAvg=decAvg)
+                print "*****appending***"
+                # Add to the session or it won't ever be stored
+                db.session.add(monthlyAvg)
+
+        # Commit work
+        db.session.commit()
+        print "*****appended*****"
 
 if __name__ == "__main__":
     connect_to_db(app)
@@ -177,4 +242,5 @@ if __name__ == "__main__":
     # Import different types of data
     # load_species()
     # load_sampling_event()
-    load_observation()
+    # load_observation()
+    load_monthly_avgs()
