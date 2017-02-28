@@ -54,15 +54,25 @@ def index():
     for county in county_location:
         counties.append(county)
 
-    bird_species = db.session.query(Species).all()
+    return render_template("homepage.html",
+                           counties=counties)
+
+
+@app.route('/get_species.json')
+def get_species():
+
+    county = request.args.get("county")
+    print county
+    birds_in_county = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county).all()
 
     species_list = []
-    for bird in bird_species:
+    for bird in birds_in_county:
         species_list.append(bird.common_name)
+    
+    print "I'm here***************"
+    print species_list
 
-    return render_template("homepage.html",
-                           counties=counties,
-                           species_list=species_list)
+    return jsonify(species_list)
 
 
 def get_county(county_name):
@@ -158,11 +168,6 @@ def get_data():
     # find bird totals, location, species based on the chosen county
     bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
                                                                                           Observation.taxonomic_num == bird_number).all()
-
-    # not all birds are seen at each location
-    # if bird_county == []:
-    #     flash("There are no recording for that species in that county. Please choose another bird.")
-    #     return redirect('/')
 
     # Long, lat for each checklist
     sampling_points = []
@@ -265,7 +270,7 @@ def bird_per_month_data():
 
     print "line 268******************"
 
-    birds_in_graph = {}
+    bird_monthly_avgs = []
     # GOAL: [{id:"Robin",
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]},
             # {id:"Jay",
@@ -273,24 +278,30 @@ def bird_per_month_data():
             # ]
 
     monthly_avgs = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county_name).all()
-
-    months = ["July", "August", "September", "October", "November", "December"]
-
     for avg in monthly_avgs:
+        birds_in_graph = {}
         birds_in_graph["id"] = avg.common_name
         birds_in_graph["values"] = []
+        months = {1: avg.janAvg,
+                  2: avg.febAvg,
+                  3: avg.marAvg,
+                  4: avg.aprilAvg,
+                  5: avg.mayAvg,
+                  6: avg.juneAvg,
+                  7: avg.julyAvg,
+                  8: avg.augAvg,
+                  9: avg.septAvg,
+                  10: avg.octAvg,
+                  11: avg.novAvg,
+                  12: avg.decAvg}
         for month in months:
             values = {}
-            if month != "July" or month != "September":
-                month = month[:3]
-            else:
-                month = month[:4]
             values["month"] = month
-            month = month.lower() + "Avg"
-            values["total"] = avg.month
+            values["total"] = months[month]
             birds_in_graph["values"].append(values)
+        bird_monthly_avgs.append(birds_in_graph)
 
-    return jsonify(birds_in_graph)
+    return jsonify(bird_monthly_avgs)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

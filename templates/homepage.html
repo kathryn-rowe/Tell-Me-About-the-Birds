@@ -14,13 +14,12 @@
         </select>
 
         <select id="bird-species" name="bird-species">
-            {% for bird in species_list %}
-            <option value="{{ bird }}">{{ bird }}</option>
-            {% endfor %}
+            <option value="bird">Please choose a species</option>
         </select>
 
     <input id="submission_info" type="submit" name="submit">
 
 </form>
-
+ <script src="https://code.jquery.com/jquery.js"></script>
+ <script src="./static/get_species.js"></script>
 {% endblock %}

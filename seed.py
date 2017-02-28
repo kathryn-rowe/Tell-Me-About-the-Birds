@@ -65,7 +65,7 @@ def load_sampling_event():
 
     # Read file insert data
 
-    for row in open("seed_data/ebd_US-CA_201607_201612_relNov-2016.txt"):
+    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -125,7 +125,7 @@ def load_observation():
     # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("seed_data/ebd_US-CA_201607_201612_relNov-2016.txt"):
+    for row in open("data/ebd_US-CA_201507_201512_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
@@ -150,7 +150,8 @@ def load_observation():
                 db.session.add(observation)
 
         count += 1
-
+        if count % 1000 == 0:
+            print count
         # Commit work
         db.session.commit()
 
