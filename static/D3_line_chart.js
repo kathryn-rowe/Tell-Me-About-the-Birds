@@ -1,7 +1,7 @@
 "use strict"
 
 var svg = d3.select("svg"),
-    margin = {top: 20, right: 80, bottom: 30, left: 50},
+    margin = {top: 30, right: 80, bottom: 30, left: 50},
     width = svg.attr("width") - margin.left - margin.right,
     height = svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -9,7 +9,7 @@ var svg = d3.select("svg"),
 // var parseTime = d3.timeParse("%Y%m%d");
 
     // setting the x&y axis, make sure that any quantity we specify on the x axis fits onto our graph.
-     // By using the d3.time.scale() function we make sure that D3 knows to treat the values as date / time 
+     // By using the d3.time.scale() function we make sure that D3 knows to treat the values as month / time 
      // entities (with all their ingrained peculiarities). Then we specify the range that those values 
      // will cover (.range) and we specify the range as being from 0 to the width of our graphing area
 var x = d3.scaleLinear().range([0, width]),
@@ -21,37 +21,38 @@ var line = d3.line()
     // Produces a cubic basis spline using the specified control points. 
     .curve(d3.curveBasis)
     // x value of the line is month
-    .x(function(d) { return x(d.month); })
+    .x(function(d) { console.log("month" + typeof d.month); return x(d.month); })
     // y value of the line is total
-    .y(function(d) { return y(d.total); });
+    .y(function(d) { console.log("total" + typeof d.total); return y(d.total); });
 
-d3.json('/birds_per_month.json', function(error, data){
-  if (error) throw error;
-  var birds = data;
-
-// console.log(birds);
-// });
-
-// d3.csv('static/data.csv', type, function(error, data) {
-  
+// d3.csv('static/data2.csv', function(error, data){
 //   if (error) throw error;
+//   // var data = [{"month": "1", "New York": "63.4", "San Francisco": "62.7", "Austin": "72.2"}, {"month": "2", "New York": "33.4", "San Francisco": "66.7", "Austin": "82.2"}]
+//   // console.log(data);
 
 //   var cities = data.columns.slice(1).map(function(id) {
 //     return {
 //       id: id,
 //       values: data.map(function(d) {
-//         return {date: d.date, temperature: d[id]};
+//         return {month: d.date, total: d[id]};
 //       })
 //     };
 //   });
-//   console.log(cities);
-  // console.log(data);
+// });
+
+d3.json('/birds_per_month.json', function(error, data){
+  if (error) throw error;
+  var birds = data;
 
 
   // the .domain function is designed to let D3 know what the scope of the data will be this is what is 
   // then passed to the scale function. Find the min and max; returns an array.
-  x.domain(d3.extent(data, function(d) { return d.month; }));
-  
+  // x.domain(d3.extent(data, function(d) { console.log(d.month); return d.month; }));
+  x.domain([
+    d3.min(birds, function(c) { return d3.min(c.values, function(d) { return d.month; }); }),
+    d3.max(birds, function(c) { return d3.max(c.values, function(d) { return d.month; }); })
+  ]);
+
   y.domain([
     d3.min(birds, function(c) { return d3.min(c.values, function(d) { return d.total; }); }),
     d3.max(birds, function(c) { return d3.max(c.values, function(d) { return d.total; }); })
@@ -65,7 +66,7 @@ d3.json('/birds_per_month.json', function(error, data){
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
-  debugger;
+
   // labels for the Y axis
   g.append("g")
       .attr("class", "axis axis--y")
@@ -89,7 +90,7 @@ d3.json('/birds_per_month.json', function(error, data){
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return z(d.id); });
   
-//   // thid section labels the lines on the graph
+//   // this section labels the lines on the graph
   bird.append("text")
       .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.month) + "," + y(d.value.total) + ")"; })
@@ -98,10 +99,3 @@ d3.json('/birds_per_month.json', function(error, data){
       .style("font", "10px sans-serif")
       .text(function(d) { return d.id; });
 });
-
-// function used to parse csv file
-// function type(d, _, columns) {
-//   d.date = parseTime(d.date);
-//   // for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
-//   return d;
-// }

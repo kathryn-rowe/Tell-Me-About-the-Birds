@@ -62,17 +62,27 @@ def index():
 def get_species():
 
     county = request.args.get("county")
-    print county
+
+    session["county_name"] = county
+
     birds_in_county = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county).all()
 
     species_list = []
     for bird in birds_in_county:
         species_list.append(bird.common_name)
-    
-    print "I'm here***************"
-    print species_list
 
     return jsonify(species_list)
+
+
+@app.route('/show_species')
+def show_species():
+
+    bird_name = request.args.get("bird")
+    # print bird_name
+    # print "*****************************"
+    session["bird_name"] = bird_name
+
+    return jsonify(bird_name)
 
 
 def get_county(county_name):
@@ -140,13 +150,20 @@ def create_geojson(sampling_points):
 def render_map():
     """Receives user's choice of county and returns map with locations of eBird checklist submissions."""
 
-    county_name = request.args.get("location")
-    bird_name = request.args.get("bird-species")
+    county_name = session["county_name"]
+    bird_name = session["bird_name"]
 
-    session["county_name"] = county_name
-    session["bird_name"] = bird_name
+    # query for the taxonmic number of the chosen species
+    bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
+    bird_number = bird_info.taxonomic_num
+    session["bird_num"] = bird_number
 
-    return render_template("map.html")
+    # print county_name
+    # print bird_name
+    # print "*****************************"
+    return render_template("map.html",
+                           county_name=county_name,
+                           bird_name=bird_name)
 
 
 @app.route("/get_data.json")
@@ -155,15 +172,14 @@ def get_data():
 
     county_name = session["county_name"]
     bird_name = session["bird_name"]
+    bird_number = session["bird_num"]
+    print county_name
+    print bird_name
+    print "*****************************"
 
     # CENTER map; get_county returns long, lat tuple.
     long_lat = get_county(county_name)
     longitude, latitude = long_lat
-
-    # query for the taxonmic number of the chosen species
-    bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
-    bird_number = bird_info.taxonomic_num
-    session["bird_num"] = bird_number
 
     # find bird totals, location, species based on the chosen county
     bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
@@ -199,7 +215,7 @@ def get_data():
     return jsonify(bird_data)
 
 
-@app.route('/bird_per_month.json')
+
 def bird_per_month():
     """Return how many total per species seen each month for graph."""
 
@@ -268,8 +284,6 @@ def bird_per_month_data():
 
     county_name = session["county_name"]
 
-    print "line 268******************"
-
     bird_monthly_avgs = []
     # GOAL: [{id:"Robin",
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]},
@@ -277,7 +291,7 @@ def bird_per_month_data():
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]}
             # ]
 
-    monthly_avgs = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county_name).all()
+    monthly_avgs = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county_name, MonthlyAvg.augAvg < 900000, MonthlyAvg.janAvg < 80000).all()
     for avg in monthly_avgs:
         birds_in_graph = {}
         birds_in_graph["id"] = avg.common_name

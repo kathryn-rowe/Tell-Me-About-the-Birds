@@ -22,9 +22,9 @@ var line = d3.line()
     // Produces a cubic basis spline using the specified control points. 
     .curve(d3.curveBasis)
     // x value of the line is date
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { console.log(d.date); console.log(typeof d.date); return x(d.date); })
     // y value of the line is temperature
-    .y(function(d) { return y(d.temperature); });
+    .y(function(d) { console.log(d.temperature); console.log(typeof d.temperature); return y(d.temperature); });
 
 // d3.json('/birds_per_month.json', function(error, data){
 
@@ -39,7 +39,7 @@ d3.csv('static/data.csv', type, function(error, data) {
       })
     };
   });
-  console.log(cities)
+  // console.log(cities)
   // returned an object with an ID for the city and 366 arrays of the date:value, temperature:value pairs in an object
   // {id:"New York", [{"date": "Sat Oct 01 2011 00:00:00 GMT-0700 (Pacific Daylight Time)", "temperature": "63.4"}], [{"date": "Sun Oct 02 2011 00:00:00 GMT-0700 (Pacific Daylight Time", "temperature": "58"}]}
 
@@ -63,15 +63,15 @@ d3.csv('static/data.csv', type, function(error, data) {
       .call(d3.axisBottom(x));
 
   // labels for the Y axis
-  g.append("g")
-      .attr("class", "axis axis--y")
-      .call(d3.axisLeft(y))
-   .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.90em")
-      .attr("fill", "#000")
-      .text("This is the Y axis");
+  // g.append("g")
+  //     .attr("class", "axis axis--y")
+  //     .call(d3.axisLeft(y))
+  //  .append("text")
+  //     .attr("transform", "rotate(-90)")
+  //     .attr("y", 6)
+  //     .attr("dy", "0.90em")
+  //     .attr("fill", "#000")
+  //     .text("This is the Y axis");
 
   // this section displays the lines
   var city = g.selectAll(".city")
@@ -98,6 +98,7 @@ d3.csv('static/data.csv', type, function(error, data) {
 // function used to parse csv file
 function type(d, _, columns) {
   d.date = parseTime(d.date);
+  console.log(d.date);
   for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
   return d;
 }
