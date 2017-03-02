@@ -9,7 +9,7 @@ body {
     width:100%;
 }
 
-#top-row{
+#top-row {
     padding-right: 0px;
     padding-left: 0px;
 }
@@ -66,23 +66,28 @@ body {
 }
 
 .axis--x path {
-  display: none;
+  display: none; 
+  /*removes line on x axis*/
+}
+
+.axis path,
+.axis line { fill: none;
+          stroke: #000;
+          stroke-width : .5;
+          fill : none;
 }
 
 .line {
   fill: none;
-  stroke: blue;
-  stroke-width: 1.5px;
+  stroke: black;
 }
+
 #D3Chart {
     height: 500px;
     width: 100%;
     position: absolute;
 }
-/*.chart-legend li span {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-right: 5px;
+
+#location a:hover {
+    background-color: #ddd
 }
-*/

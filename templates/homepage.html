@@ -8,13 +8,14 @@
 
     <label for="location">Choose a location and species</label>
         <select id="location" name="location">
+            <option value="county" placeholder="county" disabled selected>---County---</option>
             {% for county in counties %}
-            <option value="{{ county }}">{{ county }}</option>
+            <option value="{{ county }}" placeholder="county">{{ county }}</option>
             {% endfor %}
         </select>
 
         <select id="bird-species" name="bird-species">
-            <option value="bird-species">Please choose a species</option>
+            <option value="bird-species" placeholder="Species" disabled>Species</option>
         </select>
 
     <input id="submission_info" type="submit" name="submit">

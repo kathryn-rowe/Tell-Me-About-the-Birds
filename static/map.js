@@ -1,10 +1,13 @@
 "use strict"
-function renderMap(api_key, longitude, latitude, birding_data){
+
+var map;
+
+function renderMap(api_key, longitude, latitude, birding_data) {
 
     mapboxgl.accessToken = api_key;
     // var longitude = {{ longitude }}
     // var latitude = {{ latitude }}
-    var map = new mapboxgl.Map({
+    map = new mapboxgl.Map({
         container: 'map', // container id
         style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
         center: [longitude, latitude], // starting position
@@ -121,8 +124,7 @@ function getData() {
         var longitude = results.longitude;
         var birding_data = results.birding_locations;
         renderMap(api_key, longitude, latitude, birding_data);
-
     });
 };
-
 getData();
+

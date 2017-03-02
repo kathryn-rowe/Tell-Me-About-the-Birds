@@ -13,32 +13,18 @@ var svg = d3.select("svg"),
      // entities (with all their ingrained peculiarities). Then we specify the range that those values 
      // will cover (.range) and we specify the range as being from 0 to the width of our graphing area
 var x = d3.scaleLinear().range([0, width]),
-    y = d3.scaleLinear().range([height, 0]),
+    y = d3.scaleLog().range([height, 0]),
     // setting the color
-    z = d3.scaleOrdinal(d3.schemeCategory10);
+    z = d3.scaleOrdinal(d3.schemeCategory20b);
 
 var line = d3.line()
     // Produces a cubic basis spline using the specified control points. 
     .curve(d3.curveBasis)
     // x value of the line is month
-    .x(function(d) { console.log("month" + typeof d.month); return x(d.month); })
+    .x(function(d) { return x(d.month); })
     // y value of the line is total
-    .y(function(d) { console.log("total" + typeof d.total); return y(d.total); });
+    .y(function(d) { return y(d.total); });
 
-// d3.csv('static/data2.csv', function(error, data){
-//   if (error) throw error;
-//   // var data = [{"month": "1", "New York": "63.4", "San Francisco": "62.7", "Austin": "72.2"}, {"month": "2", "New York": "33.4", "San Francisco": "66.7", "Austin": "82.2"}]
-//   // console.log(data);
-
-//   var cities = data.columns.slice(1).map(function(id) {
-//     return {
-//       id: id,
-//       values: data.map(function(d) {
-//         return {month: d.date, total: d[id]};
-//       })
-//     };
-//   });
-// });
 
 d3.json('/birds_per_month.json', function(error, data){
   if (error) throw error;
@@ -53,8 +39,8 @@ d3.json('/birds_per_month.json', function(error, data){
     d3.max(birds, function(c) { return d3.max(c.values, function(d) { return d.month; }); })
   ]);
 
-  y.domain([
-    d3.min(birds, function(c) { return d3.min(c.values, function(d) { return d.total; }); }),
+  y.domain([1,
+    // d3.min(birds, function(c) { return d3.min(c.values, function(d) { return d.total; }); }),
     d3.max(birds, function(c) { return d3.max(c.values, function(d) { return d.total; }); })
   ]);
   
@@ -76,7 +62,7 @@ d3.json('/birds_per_month.json', function(error, data){
       .attr("y", 6)
       .attr("dy", "0.90em")
       .attr("fill", "#000")
-      .text("This is the Y axis");
+      .text("Total individual birds seen per month (log scale)");
 
   // this section displays the lines
   var bird = g.selectAll(".bird")
@@ -88,14 +74,47 @@ d3.json('/birds_per_month.json', function(error, data){
   bird.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return z(d.id); });
-  
-//   // this section labels the lines on the graph
-  bird.append("text")
-      .datum(function(d) { return {id: d.id, value: d.values[d.values.length - 1]}; })
-      .attr("transform", function(d) { return "translate(" + x(d.value.month) + "," + y(d.value.total) + ")"; })
-      .attr("x", 3)
-      .attr("dy", "0.35em")
-      .style("font", "10px sans-serif")
-      .text(function(d) { return d.id; });
-});
+      .style("stroke", function(d) { return z(d.id); })
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout)
+      .on("click", click);
+
+  function mouseover(d, i) {
+    d3.select(this).style("stroke", "red")
+                   .style("stroke-width", 5)
+                   .style("opacity", 1); 
+    $("#blurb").text(d.id);
+  };
+
+  function mouseout(d, i) {
+    d3.select(this).style("stroke", function(d) {return z(d.id);})
+                   .style("opacity", "0.3")
+                   .style("stroke-width", 1);
+    $("#blurb").html("&nbsp");
+  };
+
+  function click(d, i) {
+    d3.select(this);
+    var birdName = d.id;
+    var centerMap = map.getCenter();
+    // console.log(centerMap.lat, centerMap.lng)
+    // console.log(bird_name);
+    $.ajax({
+        url: "/reload_data.json",
+        dataType: 'json',
+        type: 'GET',
+        data: {"bird": birdName},
+        success: function(results) {
+            var api_key = results.mapbox_api_key;
+            var latitude = centerMap.lat;
+            var longitude = centerMap.lng;
+            var birding_data = results.birding_locations;
+            var bird_name = results.bird_name;
+            var county_name = results.county_name;
+            renderMap(api_key, longitude, latitude, birding_data);
+            $('.map-overlay-inner').empty();
+            $('.map-overlay-inner').html("<h2>"+bird_name + " Observations in " + county_name + " County, 2015</h2><label for='slider' id='month'>January</label><input id='slider' type='range' min='0' max='11' step='1' value='0' />");
+        }
+    });
+  }
+}); 

@@ -215,6 +215,51 @@ def get_data():
     return jsonify(bird_data)
 
 
+@app.route("/reload_data.json")
+def reload_data():
+    """ Return bird species, totals, location to map """
+
+    bird_name = request.args.get("bird")
+    session["bird_name"] = bird_name
+
+    # query for the taxonmic number of the chosen species
+    bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
+    bird_number = bird_info.taxonomic_num
+    session["bird_num"] = bird_number
+
+    county_name = session["county_name"]
+
+    # find bird totals, location, species based on the chosen county
+    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
+                                                                                          Observation.taxonomic_num == bird_number).all()
+
+    # Long, lat for each checklist
+    sampling_points = []
+
+    # Generate sampling_points list from database
+    # for location in county_info:
+    for bird_location in bird_county:
+        location_dict = {}
+        location_dict["long"] = bird_location[1].longitude
+        location_dict["lat"] = bird_location[1].latitude
+        location_dict["date"] = bird_location[1].observation_date.strftime('%B')
+        location_dict["day"] = bird_location[1].observation_date.strftime('%d')
+        location_dict["species"] = bird_location[0].taxonomic_num
+        location_dict["obs_count"] = bird_location[0].observation_count
+        sampling_points.append(location_dict)
+
+    # Geojson of birding locations generated from eBird database
+    birding_locations = create_geojson(sampling_points)
+
+    # send all this information to website using json
+    bird_data = {
+        "mapbox_api_key": mapbox_api_key,
+        "birding_locations": birding_locations,
+        "bird_name": bird_name,
+        "county_name": county_name}
+
+    return jsonify(bird_data)
+
 
 def bird_per_month():
     """Return how many total per species seen each month for graph."""
@@ -295,6 +340,7 @@ def bird_per_month_data():
     for avg in monthly_avgs:
         birds_in_graph = {}
         birds_in_graph["id"] = avg.common_name
+        birds_in_graph["latin"] = avg.taxonomic_num
         birds_in_graph["values"] = []
         months = {1: avg.janAvg,
                   2: avg.febAvg,
