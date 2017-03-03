@@ -38,7 +38,12 @@ app.jinja_env.undefined = StrictUndefined
 county_location = {"Humboldt": (-123.86, 40.74),
                    "Yuba": (-121.40, 39.28),
                    "San Francisco": (-122.44, 37.76),
-                   "Monterey": (-121.89, 36.6)}
+                   "Monterey": (-122.00, 36.6)}
+
+zoom_level = {"Humboldt": 10,
+              "Yuba": 9,
+              "San Francisco": 11,
+              "Monterey": 9}
 
 
 @app.before_request
@@ -99,6 +104,13 @@ def get_county(county_name):
             return county_location[county]
 
 
+def get_zoom(county_name):
+    """Return zoom level for chosen county"""
+
+    for county in zoom_level:
+        if county == county_name:
+            return zoom_level[county]
+
 # @app.route("/filter_geojson", methods=['POST'])
 # def filter_geojson():
 
@@ -158,12 +170,14 @@ def render_map():
     bird_number = bird_info.taxonomic_num
     session["bird_num"] = bird_number
 
-    # print county_name
-    # print bird_name
-    # print "*****************************"
+    counties = []
+    for county in county_location:
+        counties.append(county)
+
     return render_template("map.html",
                            county_name=county_name,
-                           bird_name=bird_name)
+                           bird_name=bird_name,
+                           counties=counties)
 
 
 @app.route("/get_data.json")
@@ -173,9 +187,9 @@ def get_data():
     county_name = session["county_name"]
     bird_name = session["bird_name"]
     bird_number = session["bird_num"]
-    print county_name
-    print bird_name
-    print "*****************************"
+
+    zoomLevel = get_zoom(county_name)
+    session["zoom_level"] = zoomLevel
 
     # CENTER map; get_county returns long, lat tuple.
     long_lat = get_county(county_name)
@@ -210,24 +224,17 @@ def get_data():
         "mapbox_api_key": mapbox_api_key,
         "birding_locations": birding_locations,
         "bird_name": bird_name,
-        "county_name": county_name}
+        "county_name": county_name,
+        "zoomLevel": zoomLevel}
 
     return jsonify(bird_data)
 
 
-@app.route("/reload_data.json")
-def reload_data():
-    """ Return bird species, totals, location to map """
-
-    bird_name = request.args.get("bird")
-    session["bird_name"] = bird_name
-
+def create_geoFeature(bird_name, county_name):
     # query for the taxonmic number of the chosen species
     bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
     bird_number = bird_info.taxonomic_num
     session["bird_num"] = bird_number
-
-    county_name = session["county_name"]
 
     # find bird totals, location, species based on the chosen county
     bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
@@ -251,6 +258,19 @@ def reload_data():
     # Geojson of birding locations generated from eBird database
     birding_locations = create_geojson(sampling_points)
 
+    return birding_locations
+
+
+@app.route("/reload_data.json")
+def reload_data():
+    """ Return bird species, totals, location to map """
+
+    bird_name = request.args.get("bird")
+    session["bird_name"] = bird_name
+    county_name = session["county_name"]
+
+    birding_locations = create_geoFeature(bird_name, county_name)
+
     # send all this information to website using json
     bird_data = {
         "mapbox_api_key": mapbox_api_key,
@@ -261,71 +281,44 @@ def reload_data():
     return jsonify(bird_data)
 
 
-def bird_per_month():
-    """Return how many total per species seen each month for graph."""
+@app.route("/reload_county.json")
+def reload_county():
+    """ Return bird species, totals, location to map """
 
-    county_name = session["county_name"]
-    taxonomic_num = session["bird_num"]
-    bird_name = session["bird_name"]
-    # print bird_name + "****************************"
+    # receive data from drop-down menu ajax request
+    bird_com_name = request.args.get("bird")
+    county_name = request.args.get("county")
 
-    # returns total amount of specified species seen per checklist, where total is not indicated by present, or 'x'
-    bird_date = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(Observation.taxonomic_num == taxonomic_num,
-                                                                                        Observation.observation_count != 'X',
-                                                                                        SamplingEvent.county == county_name).all()
+    # get  the zoom level of the new chosen county
+    zoomLevel = get_zoom(county_name)
 
-    # X-axis labels
-    sum_per_month = {"July": 0, "August": 0, "September": 0, "October": 0, "November": 0, "December": 0}
+    # reset session data from the ajax request
+    session["bird_name"] = bird_com_name
+    session["county_name"] = county_name
+    session["zoom_level"] = zoomLevel
 
-    # gets total number of bird species seen per month
-    for label in sum_per_month:
-        for observation in bird_date:
-            if observation[1].observation_date.strftime('%B') == label:
-                sum_per_month[label] += int(observation[0].observation_count)
+    # CENTER map; get_county returns long, lat tuple.
+    long_lat = get_county(county_name)
+    longitude, latitude = long_lat
 
-    # returned totals have to be ordered by month
-    month_totals = [sum_per_month["July"],
-                    sum_per_month["August"],
-                    sum_per_month["September"],
-                    sum_per_month["October"],
-                    sum_per_month["November"],
-                    sum_per_month["December"]]
+    birding_locations = create_geoFeature(bird_com_name, county_name)
 
-    # create chart/graph showing total species per month
-    data_dict = {
-        "labels": ["July", "Aug", "Sept", "Oct", "Nov", "Dec"],
-        "datasets": [
-            {
-                "label": bird_name,
-                "fill": False,
-                "lineTension": 0.5,
-                "backgroundColor": "rgba(220,220,220,0.2)",
-                "borderColor": "rgba(220,220,220,1)",
-                "borderCapStyle": 'butt',
-                "borderDash": [],
-                "borderDashOffset": 0.0,
-                "borderJoinStyle": 'miter',
-                "pointBorderColor": "rgba(220,220,220,1)",
-                "pointBackgroundColor": "#fff",
-                "pointBorderWidth": 1,
-                "pointHoverRadius": 5,
-                "pointHoverBackgroundColor": "#fff",
-                "pointHoverBorderColor": "rgba(220,220,220,1)",
-                "pointHoverBorderWidth": 2,
-                "pointRadius": 3,
-                "pointHitRadius": 10,
-                "data": month_totals,
-                "spanGaps": False,
-                }
-        ]
-    }
+    # send all this information to website using json
+    bird_data = {
+        "longitude": longitude,
+        "latitude": latitude,
+        "mapbox_api_key": mapbox_api_key,
+        "birding_locations": birding_locations,
+        "bird_name": bird_com_name,
+        "county_name": county_name,
+        "zoomLevel": zoomLevel}
 
-    return jsonify(data_dict)
+    return jsonify(bird_data)
 
 
 @app.route('/birds_per_month.json')
 def bird_per_month_data():
-    """Return how many total per species seen each month for graph."""
+    """Return how many total per species seen each month for D3 graph."""
 
     county_name = session["county_name"]
 
@@ -336,6 +329,7 @@ def bird_per_month_data():
             # "values": [{"month": "Jan", "total": 600}], [{"month": "Feb", "total": 40}]}
             # ]
 
+    # Monthly totals are stored in MonthlyAvg table in database.
     monthly_avgs = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county_name, MonthlyAvg.augAvg < 900000, MonthlyAvg.janAvg < 80000).all()
     for avg in monthly_avgs:
         birds_in_graph = {}
@@ -362,6 +356,7 @@ def bird_per_month_data():
         bird_monthly_avgs.append(birds_in_graph)
 
     return jsonify(bird_monthly_avgs)
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the

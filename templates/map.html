@@ -32,12 +32,48 @@
                     <div id="blurb-content"></div>
                 </div>
             </div>
+            
+            <div class="row">
+                <div id="picture-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
+                    <img src="./static/quail.jpg" alt="./static/generic_bird.jpg" id="birdz-rule">
+                    <script src="https://code.jquery.com/jquery.js"></script>
+                    <script src="./static/bird-picture.js"></script>
+                </div>
+            </div>
 
             <div class="row">
-                <div id="another-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
+                <div id="abstract-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
+                    <p id="abstract" alt="Species description unavailable.">Here is some text about the birds.</p>
+                    <script src="https://code.jquery.com/jquery.js"></script>
+                    <script src="./static/bird-picture.js"></script>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="d3-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
                     <svg id="D3Chart" width="960" height="500"></svg>
                     <script src="https://d3js.org/d3.v4.min.js"></script>
                     <script src="./static/D3_line_chart.js"></script>
+                </div>
+            </div>
+
+            <div class="row">
+                <div id="county-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
+                    <form>
+                        <label for="county">Choose another location</label>
+                            <select id="new-county" name="new-county">
+                                <option value="new-county" placeholder="county" disabled selected>---County---</option>
+                                {% for county in counties %}
+                                <option value="{{ county }}" placeholder="county">{{ county }}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="bird-list" name="bird-list">
+                                <option value="bird-list" placeholder="Species" disabled>Species</option>
+                            </select>
+                        <input id="submit-reload" type="submit" name="submit">
+                    </form>
+                    <script src="https://code.jquery.com/jquery.js"></script>
+                    <script src="./static/reload_county.js"></script>
                 </div>
             </div>
 

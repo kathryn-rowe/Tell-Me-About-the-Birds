@@ -2,7 +2,10 @@ body {
     padding: 0px;
     margin: 0px;
 }
-
+#birdz-rule {
+    height: 400px;
+    width: 50%;
+}
 #map { 
     height: 500px;
 /*    top:0; */

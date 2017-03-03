@@ -97,6 +97,7 @@ d3.json('/birds_per_month.json', function(error, data){
     d3.select(this);
     var birdName = d.id;
     var centerMap = map.getCenter();
+    var zoomLevel = map.getZoom();
     // console.log(centerMap.lat, centerMap.lng)
     // console.log(bird_name);
     $.ajax({
@@ -111,9 +112,10 @@ d3.json('/birds_per_month.json', function(error, data){
             var birding_data = results.birding_locations;
             var bird_name = results.bird_name;
             var county_name = results.county_name;
-            renderMap(api_key, longitude, latitude, birding_data);
+            changePicture(bird_name);
+            renderMap(api_key, longitude, latitude, birding_data, zoomLevel);
             $('.map-overlay-inner').empty();
-            $('.map-overlay-inner').html("<h2>"+bird_name + " Observations in " + county_name + " County, 2015</h2><label for='slider' id='month'>January</label><input id='slider' type='range' min='0' max='11' step='1' value='0' />");
+            $('.map-overlay-inner').html("<h2>"+bird_name + " Observations in " + county_name + " County, 2015</h2><label for='slider' id='month'>January</label><input id='slider' type='range' min='0' max='11' step='1' value='0' />");   
         }
     });
   }

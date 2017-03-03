@@ -2,7 +2,7 @@
 
 var map;
 
-function renderMap(api_key, longitude, latitude, birding_data) {
+function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
 
     mapboxgl.accessToken = api_key;
     // var longitude = {{ longitude }}
@@ -12,7 +12,7 @@ function renderMap(api_key, longitude, latitude, birding_data) {
         style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
         center: [longitude, latitude], // starting position
         // center: [-121.403732, 40.492392],
-        zoom: 9 // starting zoom
+        zoom: zoomLevel // starting zoom
     });
     // map.scrollZoom.disable();
     
@@ -30,6 +30,7 @@ function renderMap(api_key, longitude, latitude, birding_data) {
         'November',
         'December'
     ];
+
     function filterBy(month) {
         var filters = ['==', 'month', months[month]];
         map.setFilter('bird_count', filters);
@@ -116,15 +117,18 @@ function renderMap(api_key, longitude, latitude, birding_data) {
     });
 };
 
-
 function getData() {
     $.get("/get_data.json", function(results) {
         var api_key = results.mapbox_api_key;
         var latitude = results.latitude;
         var longitude = results.longitude;
         var birding_data = results.birding_locations;
-        renderMap(api_key, longitude, latitude, birding_data);
+        var zoomLevel = results.zoomLevel;
+        var bird_name = results.bird_name;
+        changePicture(bird_name);
+        renderMap(api_key, longitude, latitude, birding_data, zoomLevel);
     });
 };
+
 getData();
 
