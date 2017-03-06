@@ -22,12 +22,15 @@ function reloadBirdSpecies(evt) {
 
 $('#new-county').on('change', reloadBirdSpecies);
 
-$('#submit-reload').on('submit', function(evt){
+$('#submit-reload').on('click', function(evt){
     evt.preventDefault();
-
+    console.log('hello');
     var countyName = $('#new-county').val();
+    console.log(countyName);
     var birdName = $('#bird-list option:selected').text();
     console.log(birdName);
+    
+
     $.ajax({
         url: "/reload_county.json",
         dataType: 'json',
@@ -38,8 +41,8 @@ $('#submit-reload').on('submit', function(evt){
             var latitude = results.latitude;
             var longitude = results.longitude;
             var birding_data = results.birding_locations;
-            var bird_name = results.bird_name;
-            var county_name = results.county_name;
+            var bird_name = results.bird;
+            var county_name = results.county;
             var zoomLevel = results.zoomLevel;
             changePicture(bird_name);
             renderMap(api_key, longitude, latitude, birding_data, zoomLevel);

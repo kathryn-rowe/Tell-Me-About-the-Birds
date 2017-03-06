@@ -1,18 +1,98 @@
+/*html {
+    background-image: url("./sparrow.jpg");
+    background-size: 100% auto;
+}*/
 body {
     padding: 0px;
     margin: 0px;
+    height: 100%;
+    background-image: none;
+    background-image: url("./sparrow_lng.jpg");
+    background-size: 100% auto;
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
-#birdz-rule {
+
+#homepage {
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+#homepage-form {
+  vertical-align: center;
+  height: 100%;
+  margin-top: 200px;
+}
+#homepage-row {
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+
+
+#bird-pic {
     height: 400px;
     width: 50%;
 }
+
+#picture-row {
+    display: none;
+}
+
+#map-row {
+    display: none;
+}
+
+#map-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+#picture-loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 50px;
+  height: 50px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 #map { 
     height: 500px;
-/*    top:0; */
     width:100%;
 }
 
-#top-row {
+#map-row {
     padding-right: 0px;
     padding-left: 0px;
 }

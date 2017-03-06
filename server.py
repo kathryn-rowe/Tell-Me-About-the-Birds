@@ -35,15 +35,64 @@ mapbox_api_key = secret_key.mapbox_api_key
 # If you use an undefined variable in Jinja2, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
-county_location = {"Humboldt": (-123.86, 40.74),
-                   "Yuba": (-121.40, 39.28),
-                   "San Francisco": (-122.44, 37.76),
-                   "Monterey": (-122.00, 36.6)}
-
-zoom_level = {"Humboldt": 10,
-              "Yuba": 9,
-              "San Francisco": 11,
-              "Monterey": 9}
+county_location = {"Humboldt": [(-123.86, 40.74), 9],
+                   "Monterey": [(-122.00, 36.6), 10],
+                   "San Francisco": [(-122.44, 37.76), 11],
+                   "Yuba": [(-121.40, 39.28), 10]}
+                   # "Alameda": [(-122.884, 37.59), 9],
+                   # "Alpine": [(-119.80, 38.59), 9],
+                   # "Amador": [(-120.65, 38.44), 9],
+                   # "Butte": [(-121.56, 39.64), 9],
+                   # "Calaveras": [(-120.58, 38.16), 9],
+                   # "Colusa": [(-122.26, 39.18), 9],
+                   # "Contra Costa": [(-121.93, 37.93), 9],
+                   # "Del Norte": [(-123.90, 41.69), 9],
+                   # "El Dorado": [(-120.51, 38.76), 9],
+                   # "Fresno": [(-119.83, 36.66), 9],
+                   # "Glenn": [(-122.43, 39.59), 9],
+                   # "Imperial": [(-115.41, 33.03), 9],
+                   # "Inyo": [(-117.41, 36.58), 9],
+                   # "Kern": [(-118.66, 35.29), 9],
+                   # "Kings": [(-119.83, 36.03), 9],
+                   # "Lake": [(-122.78, 39.09), 9],
+                   # "Lassen": [(-120.58, 40.66), 9],
+                   # "Los Angeles": [(-118.20, 34.36), 9],
+                   # "Madera": [(-119.83, 37.16), 9],
+                   # "Marin": [(-122.73, 38.06), 11],
+                   # "Mariposa": [(-119.90, 37.54), 9],
+                   # "Mendocino": [(-123.41, 39.41), 9],
+                   # "Merced": [(-120.75, 37.16), 9],
+                   # "Modoc": [(-120.73, 41.56), 9],
+                   # "Mono": [(-118.86, 37.91), 9],
+                   # "Napa": [(-122.33, 38.48), 9],
+                   # "Nevada": [(-120.88, 39.34), 9],
+                   # "Orange": [(-117.76, 33.70), 9],
+                   # "Placer": [(-120.76, 39.06), 9],
+                   # "Plumas": [(-120.86, 39.98), 9],
+                   # "Riverside": [(-116.05, 33.73), 9],
+                   # "Sacramento": [(-121.31, 38.46), 9],
+                   # "San Benito": [(-121.08, 36.61), 9],
+                   # "San Bernardino": [(-116.16, 34.66), 9],
+                   # "San Diego": [(-116.80, 33.03), 9],
+                   # "San Joaquin": [(-121.30, 37.93), 9],
+                   # "San Luis Obispo": [(-120.53, 35.36), 9],
+                   # "San Mateo": [(-122.35, 37.44), 9],
+                   # "Santa Barbara": [(-120.03, 34.73), 9],
+                   # "Santa Clara": [(-121.76, 37.23), 9],
+                   # "Santa Cruz": [(-122.05, 37.06), 9],
+                   # "Shasta": [(-122.03, 40.76), 9],
+                   # "Sierra": [(-120.55, 39.58), 9],
+                   # "Siskiyou": [(-122.51, 41.58), 9],
+                   # "Solano": [(-121.95, 38.23), 9],
+                   # "Sonoma": [(-122.90, 38.55), 9],
+                   # "Stanislaus": [(-121.00, 37.54), 9],
+                   # "Sutter": [(-121.70, 39.01), 9],
+                   # "Tehama": [(-122.30, 40.13), 9],
+                   # "Trinity": [(-123.16, 40.58), 9],
+                   # "Tulare": [(-118.80, 36.26), 9],
+                   # "Tuolumne": [(-119.90, 38.06), 9],
+                   # "Ventura": [(-119.01, 34.46), 9],
+                   # "Yolo": [(-121.88, 38.69), 9],
 
 
 @app.before_request
@@ -98,18 +147,13 @@ def get_county(county_name):
 
     >>> get_county("Santa Monica")
     """
-
-    for county in county_location:
-        if county == county_name:
-            return county_location[county]
+    return county_location[county_name][0]
 
 
 def get_zoom(county_name):
     """Return zoom level for chosen county"""
 
-    for county in zoom_level:
-        if county == county_name:
-            return zoom_level[county]
+    return county_location[county_name][1]
 
 # @app.route("/filter_geojson", methods=['POST'])
 # def filter_geojson():
@@ -164,6 +208,7 @@ def render_map():
 
     county_name = session["county_name"]
     bird_name = session["bird_name"]
+    print bird_name
 
     # query for the taxonmic number of the chosen species
     bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
@@ -286,22 +331,23 @@ def reload_county():
     """ Return bird species, totals, location to map """
 
     # receive data from drop-down menu ajax request
-    bird_com_name = request.args.get("bird")
-    county_name = request.args.get("county")
-
+    bird = request.args.get("bird")
+    county = request.args.get("county")
+    print bird
+    print "***************************"
     # get  the zoom level of the new chosen county
-    zoomLevel = get_zoom(county_name)
+    zoomLevel = get_zoom(county)
 
     # reset session data from the ajax request
-    session["bird_name"] = bird_com_name
-    session["county_name"] = county_name
+    session["bird_name"] = bird
+    session["county_name"] = county
     session["zoom_level"] = zoomLevel
 
     # CENTER map; get_county returns long, lat tuple.
-    long_lat = get_county(county_name)
+    long_lat = get_county(county)
     longitude, latitude = long_lat
 
-    birding_locations = create_geoFeature(bird_com_name, county_name)
+    birding_locations = create_geoFeature(bird, county)
 
     # send all this information to website using json
     bird_data = {
@@ -309,8 +355,8 @@ def reload_county():
         "latitude": latitude,
         "mapbox_api_key": mapbox_api_key,
         "birding_locations": birding_locations,
-        "bird_name": bird_com_name,
-        "county_name": county_name,
+        "bird": bird,
+        "county": county,
         "zoomLevel": zoomLevel}
 
     return jsonify(bird_data)

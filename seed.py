@@ -163,8 +163,8 @@ def get_month_avg(county, tax_num):
                                                                                         Observation.observation_count != 'X',
                                                                                         SamplingEvent.county == county).all()
 
-    sum_per_month = {"January": 0, "February": 0, "March": 0, "April": 0, "May": 0, "June": 0,
-                     "July": 0, "August": 0, "September": 0, "October": 0, "November": 0, "December": 0}
+    sum_per_month = {"January": 2, "February": 2, "March": 2, "April": 2, "May": 2, "June": 2,
+                     "July": 2, "August": 2, "September": 2, "October": 2, "November": 2, "December": 2}
 
     # gets total number of bird species seen per month
     for label in sum_per_month:

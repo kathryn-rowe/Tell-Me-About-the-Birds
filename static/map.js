@@ -79,27 +79,27 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
             'filter': ['!=', 'obs_count', 'X']
         }, 'admin-2-boundaries-dispute');
 
-        // map.addLayer({
-        //     'id': 'x_count',
-        //     'type': 'circle',
-        //     'source': "birding-locations",
-        //     'paint': {
-        //         'circle-radius': 20,
-        //         'circle-color': '#000000',
-        //         'circle-opacity': 0.8
-        //     },
-        //     'filter': ['==', 'obs_count', 'X']
-        // }, 'admin-2-boundaries-dispute');
+        map.addLayer({
+            'id': 'x_count',
+            'type': 'circle',
+            'source': "birding-locations",
+            'paint': {
+                'circle-radius': 20,
+                'circle-color': '#000000',
+                'circle-opacity': 0.8
+            },
+            'filter': ['==', 'obs_count', 'X']
+        }, 'admin-2-boundaries-dispute');
             
         filterBy(0);
-    //     //Connect slider with map; gets the current month as an integer
+        //Connect slider with map; gets the current month as an integer
         document.getElementById('slider').addEventListener('input', function(evt) {
             var month = parseInt(evt.target.value);
             filterBy(month);
         });
     });
     map.on('click', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count', 'x_count'] });
     if (!features.length) {
         return;
     }
@@ -112,7 +112,7 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
         .addTo(map);
     });
     map.on('mousemove', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count', 'x_count'] });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     });
 };
@@ -126,7 +126,11 @@ function getData() {
         var zoomLevel = results.zoomLevel;
         var bird_name = results.bird_name;
         changePicture(bird_name);
+        // $("#map-loader").hide();
+        // $("#map-row").show();
         renderMap(api_key, longitude, latitude, birding_data, zoomLevel);
+        $("#map-loader").hide();
+        $("#map-row").show();
     });
 };
 
