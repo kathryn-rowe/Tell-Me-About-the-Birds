@@ -19,7 +19,7 @@ function changePicture(species) {
             $("#picture-row").show();
             var image = results.Image;
             if (image == "") {
-                image = "./static/generic_bird.jpg";
+                image = "./static/images/generic_bird.jpg";
             }
             var abstract = results.Abstract;
             $("#bird-pic").attr("src", image);

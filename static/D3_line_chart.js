@@ -1,7 +1,7 @@
 "use strict"
 
 var svg = d3.select("svg"),
-    margin = {top: 30, right: 80, bottom: 20, left: 50},
+    margin = {top: 10, right: 80, bottom: 20, left: 40},
     width = svg.attr("width") - margin.left - margin.right,
     height = svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -59,10 +59,10 @@ d3.json('/birds_per_month.json', function(error, data){
       .call(d3.axisLeft(y))
    .append("text")
       .attr("y", 10)
-      .attr("dy", "2em")
+      .attr("dy", "0.5em")
       .attr("dx", "17em")
       .attr("fill", "#000")
-      .style("font-size", "22")
+      .style("font-size", "18")
       .style("font-style", "Roboto")
       .text("Bird species per month (log scale)");
 
@@ -76,15 +76,15 @@ d3.json('/birds_per_month.json', function(error, data){
   bird.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
-      .style("stroke", function(d) { return z(d.id); })
+      .style("stroke", "#B4C9B4" )
+      .style("opacity", 1)
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
       .on("click", click);
 
   function mouseover(d, i) {
-    d3.select(this).style("stroke", "red")
-                   .style("stroke-width", 5)
-                   .style("opacity", 1); 
+    d3.select(this).style("stroke", "#8b6857")
+                   .style("stroke-width", 5); 
     $("#blurb").text(d.id);
   };
 
