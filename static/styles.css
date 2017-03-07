@@ -1,48 +1,54 @@
-/*html {
-    background-image: url("./sparrow.jpg");
-    background-size: 100% auto;
-}*/
+html {
+    height: 100%;
+}
+
 body {
+    height: 98%;
     padding: 0px;
     margin: 0px;
-    height: 100%;
-    background-image: none;
-    background-image: url("./sparrow_lng.jpg");
-    background-size: 100% auto;
-    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font: 18px/20px 'Roboto', sans-serif; 
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Open Sans', sans-serif;
+}
+
+/*Homepage styles*/
+#title {
+  font-size: 39px;
+  color: black;
+}
 #homepage {
+  background-size: cover;
+  background: url("./images/sparrow.jpg") no-repeat center center;
   height: 100%;
   padding: 0px;
   margin: 0px;
 }
-
 #homepage-form {
-  vertical-align: center;
-  height: 100%;
-  margin-top: 200px;
+  width: 25%;
+  margin-bottom: 5px;
+}
+.select {
+  height: 30px;
+}
+#location {
+  width: 137px;
+}
+#bird-species {
+  width: 245px;
+}
+.submit {
+  width: 40px;
+  height: 30px;
+  vertical-align: bottom;
 }
 #homepage-row {
-  height: 100%;
-  padding: 0px;
-  margin: 0px;
+  height: 100px;
+  margin-top: 150px;
 }
 
-
-#bird-pic {
-    height: 400px;
-    width: 50%;
-}
-
-#picture-row {
-    display: none;
-}
-
-#map-row {
-    display: none;
-}
-
+/*Map and graph page styles*/
 #map-loader {
   position: absolute;
   left: 50%;
@@ -86,17 +92,40 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
-#map { 
-    height: 500px;
-    width:100%;
+#all-items {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }
-
+#all-row {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
 #map-row {
-    padding-right: 0px;
-    padding-left: 0px;
+  padding: 0;
+  height: 100%;
 }
-
+#map { 
+    height: 100%;
+}
+.mapboxgl-canvas {
+  height: 100%;
+}
+#pic-chart {
+  height: 100%;
+  padding: 0;
+}
+#picture-row img {
+  width: 40%;
+  padding: 15px;
+}
+#picture-row p {
+  width: 50%;
+  padding: 15px;
+}
 #lineChart {
     height: 500px;
     width: 100%;
@@ -104,7 +133,7 @@ body {
 }
 
 .map-overlay {
-    font: 12px/18px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 100%;
     position: absolute;
     display: inline-block;
     width: 35%;
@@ -122,35 +151,21 @@ body {
 }
 
 .map-overlay h2 {
-    font: 100% 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 100%;
     line-height: 20px;
     display: block;
     margin: 0 0 10px;
 }
 
-/*.map-overlay .legend .bar {
-    height: 10px;
-    width: 100%;
-    background: linear-gradient(to right, #FCA107, #7F3121);
-}*/
-
-.map-overlay input {
-    background-color: transparent;
-    display: inline-block;
-    width: 100%;
-    position: relative;
-    margin: 0;
-    cursor: ew-resize;
-}
-
 .mapboxgl-popup {
     max-width: 400px;
-    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 20px;
 }
-
+.axis axis--x {
+  font-size: 26px;
+}
 .axis--x path {
   display: none; 
-  /*removes line on x axis*/
 }
 
 .axis path,
@@ -159,18 +174,15 @@ body {
           stroke-width : .5;
           fill : none;
 }
-
 .line {
   fill: none;
   stroke: black;
 }
-
 #D3Chart {
-    height: 500px;
+    height: 50%;
     width: 100%;
-    position: absolute;
+    /*position: absolute;*/
 }
-
 #location a:hover {
     background-color: #ddd
 }

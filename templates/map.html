@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
+<div class="container" id="all-items">
     
-    <div id="map-loader"></div>
-    
-    <div class="row">
-        <div id="map-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
+    <div class="row" id="all-row">
+        
+        <div id="map-loader"></div>
+        
+        <div id="map-row" class="col-xs-12 col-md-6 col-lg-4" align="left">
             <div id='map'></div>
             <div class='map-overlay top'>
                 <div class='map-overlay-inner'>
@@ -17,52 +18,46 @@
             <script src="https://code.jquery.com/jquery.js"></script>
             <script src="./static/map.js"></script>
         </div>
-    </div>
-
-    <div class="row">
-        <div id="blurb" class="col-xs-12 col-md-12 col-lg-12" align="left">
-            <div id="default-blurb" value="default-blurb" style="display: block;">{{ session.bird_name }}</div>
-            <div id="blurb-content"></div>
-        </div>
-    </div>
     
-    <div class="row">
-        <div id="picture-loader"></div>
-        <div id="picture-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
-            <img src="./static/generic_bird.jpg" id="bird-pic">
-            <p id="abstract" alt="Species description unavailable.">Here is some text about the birds.</p>
-            <script src="https://code.jquery.com/jquery.js"></script>
-            <script src="./static/bird-picture.js"></script>
-        </div>
-    </div>
+        <div class="col-xs-12 col-md-6 col-lg-8" id="pic-chart" align="left">
+            <div id="d3-row" style="display: block;">
+                <svg id="D3Chart" width="1250" height="725" viewbox="0 0 1250 725" preserveAspectRatio="xMidYMid meet"></svg>
+                <script src="https://d3js.org/d3.v4.min.js"></script>
+                <script src="./static/D3_line_chart.js"></script>
+            </div><br>
 
-    <div class="row">
-        <div id="d3-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
-            <svg id="D3Chart" width="960" height="500"></svg>
-            <script src="https://d3js.org/d3.v4.min.js"></script>
-            <script src="./static/D3_line_chart.js"></script>
-        </div>
-    </div>
+<!--             <div id="blurb">
+                <div id="default-blurb" value="default-blurb" style="display: block;">{{ session.bird_name }}</div>
+                <div id="blurb-content"></div>
+            </div> -->
 
-    <div class="row">
-        <div id="county-row" class="col-xs-12 col-md-12 col-lg-12" align="left">
-            <form>
-                <label for="county">Choose another location</label>
-                    <select id="new-county" name="new-county">
-                        <option value="new-county" placeholder="county" disabled selected>---County---</option>
-                        {% for county in counties %}
-                        <option value="{{ county }}" placeholder="county">{{ county }}</option>
-                        {% endfor %}
-                    </select>
-                    <select id="bird-list" name="bird-list">
-                        <option value="bird-list" placeholder="Species" disabled>Species</option>
-                    </select>
-                <input id="submit-reload" type="submit" name="submit">
-            </form>
-            <script src="https://code.jquery.com/jquery.js"></script>
-            <script src="./static/reload_county.js"></script>
+            <div id="picture-row">
+                <img src="./static/images/generic_bird.jpg" id="bird-pic"><br>
+                <p id="abstract" alt="Species description unavailable.">Here is some text about the birds.</p>
+                <script src="https://code.jquery.com/jquery.js"></script>
+                <script src="./static/bird-picture.js"></script>
+            </div>
+    
+<!--             <div id="county-row">
+                <form>
+                    <label for="county">Choose another location</label>
+                        <select id="new-county" name="new-county">
+                            <option value="new-county" placeholder="county" disabled selected>---County---</option>
+                            {% for county in counties %}
+                            <option value="{{ county }}" placeholder="county">{{ county }}</option>
+                            {% endfor %}
+                        </select>
+                        <select id="bird-list" name="bird-list">
+                            <option value="bird-list" placeholder="Species" disabled>Species</option>
+                        </select>
+                    <input id="submit-reload" type="submit" name="submit">
+                </form>
+                <script src="https://code.jquery.com/jquery.js"></script>
+                <script src="./static/reload_county.js"></script>
+            </div> -->
         </div>
     </div>
+</div>
 
 </div>        
 

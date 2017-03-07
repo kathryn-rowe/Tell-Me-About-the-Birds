@@ -1,7 +1,7 @@
 "use strict"
 
 var svg = d3.select("svg"),
-    margin = {top: 30, right: 80, bottom: 30, left: 50},
+    margin = {top: 30, right: 80, bottom: 20, left: 50},
     width = svg.attr("width") - margin.left - margin.right,
     height = svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -58,11 +58,13 @@ d3.json('/birds_per_month.json', function(error, data){
       .attr("class", "axis axis--y")
       .call(d3.axisLeft(y))
    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", "0.90em")
+      .attr("y", 10)
+      .attr("dy", "2em")
+      .attr("dx", "17em")
       .attr("fill", "#000")
-      .text("Total individual birds seen per month (log scale)");
+      .style("font-size", "22")
+      .style("font-style", "Roboto")
+      .text("Bird species per month (log scale)");
 
   // this section displays the lines
   var bird = g.selectAll(".bird")

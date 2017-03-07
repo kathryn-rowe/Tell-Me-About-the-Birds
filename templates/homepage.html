@@ -4,27 +4,25 @@
 
 <div class="container-fluid" id="homepage">
             
-    <div class="homepage-row" id="homepage-row">
-        <div class="col-xs-12 col-md-12 col-lg-12" id="homepage-row" align="center">
+    <div class="row" id="homepage-row" align="center">
+        
+        <form action="/render_map" id="homepage-form" class="dropdown">
 
-            <form action="/render_map" id="homepage-form">
+            <label for="location"><h1 id="title">tell me about the birds</h1></label><br>
+                <select id="location" class="select" name="location">
+                    <option value="county" placeholder="county" disabled selected>County</option>
+                    {% for county in counties %}
+                    <option value="{{ county }}" placeholder="county">{{ county }}</option>
+                    {% endfor %}
+                </select>
 
-                <label for="location">tell me about the birds.</label><br>
-                    <select id="location" name="location">
-                        <option value="county" placeholder="county" disabled selected>---County---</option>
-                        {% for county in counties %}
-                        <option value="{{ county }}" placeholder="county">{{ county }}</option>
-                        {% endfor %}
-                    </select>
+                <select id="bird-species" class="select" name="bird-species">
+                    <option value="bird-species" placeholder="Species" width="75px" disabled>Species</option>
+                </select>
 
-                    <select id="bird-species" name="bird-species">
-                        <option value="bird-species" placeholder="Species" disabled>Species</option>
-                    </select>
+            <input type="image" name="submit" src="./static/images/arrow_submit-01.png" border="0" class="submit" id="submission_info"  >
 
-                <input id="submission_info" type="submit" name="submit">
-
-            </form>
-        </div>
+        </form>
     </div>
 </div>
 
