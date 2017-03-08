@@ -35,8 +35,8 @@ mapbox_api_key = secret_key.mapbox_api_key
 # If you use an undefined variable in Jinja2, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
-county_location = {"Humboldt": [(-123.86, 40.74), 9],
-                   "Monterey": [(-122.00, 36.6), 10],
+county_location = {"Humboldt": [(-123.95, 40.74), 9],
+                   "Monterey": [(-121.8946, 36.60), 10],
                    "San Francisco": [(-122.44, 37.76), 11],
                    "Yuba": [(-121.40, 39.28), 10]}
                    # "Alameda": [(-122.884, 37.59), 9],
@@ -242,7 +242,8 @@ def get_data():
 
     # find bird totals, location, species based on the chosen county
     bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
-                                                                                          Observation.taxonomic_num == bird_number).all()
+                                                                                          Observation.taxonomic_num == bird_number,
+                                                                                          Observation.observation_count != 'X').all()
 
     # Long, lat for each checklist
     sampling_points = []
@@ -283,7 +284,8 @@ def create_geoFeature(bird_name, county_name):
 
     # find bird totals, location, species based on the chosen county
     bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
-                                                                                          Observation.taxonomic_num == bird_number).all()
+                                                                                          Observation.taxonomic_num == bird_number,
+                                                                                          Observation.observation_count != 'X').all()
 
     # Long, lat for each checklist
     sampling_points = []

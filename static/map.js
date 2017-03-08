@@ -9,7 +9,7 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
     // var latitude = {{ latitude }}
     map = new mapboxgl.Map({
         container: 'map', // container id
-        style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+        style: 'mapbox://styles/mapbox/light-v9', //stylesheet location
         center: [longitude, latitude], // starting position
         // center: [-121.403732, 40.492392],
         zoom: zoomLevel // starting zoom
@@ -54,42 +54,40 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
                 'circle-radius': {
                     property: 'obs_count',
                     stops: [
-                        [0, 4],
-                        [5, 9],
-                        [10, 14],
-                        [15, 19],
-                        [20, 24],
-                        [25, 29],
+                        [20, 6],
+                        [40, 9],
+                        [60, 12],
+                        [80, 15],
                     ]
                 },
                 'circle-color': {
                     property: 'obs_count',
                     stops: [
                       // ['X', '#000000'],
-                      [0, '#2DC4B2'],
-                      [1, '#3BB3C3'],
-                      [2, '#669EC4'],
-                      [3, '#8B88B6'],
-                      [4, '#A2719B'],
-                      [5, '#AA5E79']
+                      [10, '#f29e00'],
+                      [15, '#f29e00'],
+                      [25, '#f29e00'],
+                      [30, '#f29e00'],
                     ]
                 },
-                'circle-opacity': 0.8
+                'circle-opacity': 0.9,
+                'circle-stroke-width': 1 ,
+                'circle-stroke-color': '#bc7c04'
             },
             'filter': ['!=', 'obs_count', 'X']
         }, 'admin-2-boundaries-dispute');
 
-        map.addLayer({
-            'id': 'x_count',
-            'type': 'circle',
-            'source': "birding-locations",
-            'paint': {
-                'circle-radius': 20,
-                'circle-color': '#000000',
-                'circle-opacity': 0.8
-            },
-            'filter': ['==', 'obs_count', 'X']
-        }, 'admin-2-boundaries-dispute');
+        // map.addLayer({
+        //     'id': 'x_count',
+        //     'type': 'circle',
+        //     'source': "birding-locations",
+        //     'paint': {
+        //         'circle-radius': 1,
+        //         'circle-color': '#ffffff',
+        //         'circle-opacity': 1
+        //     },
+        //     'filter': ['==', 'obs_count', 'X']
+        // }, 'admin-2-boundaries-dispute');
             
         filterBy(0);
         //Connect slider with map; gets the current month as an integer
@@ -99,7 +97,7 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
         });
     });
     map.on('click', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count', 'x_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count'] });
     if (!features.length) {
         return;
     }
@@ -112,7 +110,7 @@ function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
         .addTo(map);
     });
     map.on('mousemove', function (e) {
-        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count', 'x_count'] });
+        var features = map.queryRenderedFeatures(e.point, { layers: ['bird_count'] });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
     });
 };

@@ -5,6 +5,7 @@
     <div class="row" id="all-row">
                 
         <div id="map-row" class="col-xs-12 col-md-6 col-lg-4" align="left">
+            <!-- <img id="fade" src="./static/images/fade.jpg"> -->
             <div id="map-loader"></div>
             <div id='map'></div>
             <div class='map-overlay top'>
@@ -12,6 +13,15 @@
                     <h2>{{ session.bird_name }} Observations in {{ session.county_name }} County, 2015</h2>
                     <label for='slider' id='month'>January</label>
                     <input id='slider' type='range' min='0' max='11' step='1' value='0' />
+                    <div>
+                    <div id='bird-legend' class='legend'>
+                    <div class="leg-circle"><span id"style_5" style='background-color: #f29e00'></span>80+</div>
+                    <div class="leg-circle"><span id"style_4" style='background-color: #f29e00'></span>60 - 79</div>
+                    <div class="leg-circle"><span id"style_3" style='background-color: #f29e00'></span>41 - 60</div>
+                    <div class="leg-circle"><span id"style_2" style='background-color: #f29e00'></span>21 - 40</div>
+                    <div class="leg-circle"><span id"style_1" style='background-color: #f29e00'></span>0 - 20</div>
+                    </div>
+                    </div>
                 </div>
             </div>
             <script src="https://code.jquery.com/jquery.js"></script>
@@ -21,16 +31,19 @@
         <div class="col-xs-12 col-md-6 col-lg-8" id="pic-chart" align="left">
             
             <div id="picture-row">
+                <div id="header" align="right">
+                    <div id="header" style="display: block;"><h1>tell me about the birds.</h1></div>
+                </div>
                 <div class="col-xs-12 col-md-6 col-lg-4 vcenter" id="picture">
-                    <img src="./static/images/generic_bird.jpg" id="bird-pic"><br>
+                    <img src="./static/images/bird_outline.png" id="bird-pic"><br>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-5 vcenter" id="description">
                     <p id="abstract" alt="Species description unavailable.">&nbsp</p>
                     <script src="https://code.jquery.com/jquery.js"></script>
                     <script src="./static/bird-picture.js"></script>
                 </div>
-                <div class="col-xs-12 col-md-6 col-lg-3 vcenter" id="county-row">
-                    <form id="new-county-form">
+                <div class="col-xs-12 col-md-6 col-lg-3 vcenter" id="county-row" align="right">
+                    <form id="new-county-form" align="right">
                         <p>Choose a new location</p>
                         <label for="county"></label><br>
                             <select id="new-county" class="select" name="new-county">
@@ -53,17 +66,18 @@
                 <div id="blurb" align="left">
                     <div id="default-blurb" value="default-blurb" style="display: block;">{{ session.bird_name }}</div>
                     <div id="blurb-content"></div>
-                </div><br>
-                <svg id="D3Chart" width="1250" height="650" viewbox="0 0 1250 650" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+                <svg id="D3Chart" width="1250" height="645" viewbox="0 0 1250 645" preserveAspectRatio="xMidYMid meet"></svg>
                 <script src="https://d3js.org/d3.v4.min.js"></script>
                 <script src="./static/D3_line_chart.js"></script>
-            </div><br>
-
+            </div>
+            <div id="foot" align="left">
+                    <div id="foot" style="display: block;">Bird species per month (log scale)</div>
+            </div>
 
         </div>
     </div>
 </div>
-
-</div>        
+ 
 
 {% endblock %}
