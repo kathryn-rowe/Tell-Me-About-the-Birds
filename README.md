@@ -6,14 +6,21 @@ We're constantly surrounded by birds, and as they migrate, the frequency of sigh
 
 # Tech stack
 Backend: Python, Flask, PostgreSQL, SQLAlchemy
+
 Frontend: Javascript, jQuery, AJAX, JSON, Jinja, HTML5, CSS, Bootstrap, D3
+
 APIs: Mapbox, DuckDuckGo
 
 ## Features
+
 Homepage: choose a county and species
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Homepage")
+
+![alt text](https://github.com/kathryn-rowe/Tell-Me-About-the-Birds/blob/master/static/images/_readme-img/homepage.jpg "Homepage")
+
+
 Data page: explore eBird data! See where people saw this species and how many; investigate other species recorded at that location; choose another county and species.
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Data Page")
+
+![alt text](https://github.com/kathryn-rowe/Tell-Me-About-the-Birds/blob/master/static/images/_readme-img/data_page.jpg "Data Page")
 
 ### Setup/Installation
 
@@ -54,8 +61,10 @@ $ python -i model.py
 
 ### Todos
 
- - Write MOAR Tests
- - Add Night Mode
+ - Write more tests
+ - Include all CA counties
+ - Grab bird by species type
+ - Highlight chosen species on D3 graph
 
 License
 ----
