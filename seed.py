@@ -25,7 +25,7 @@ def load_species():
     tax_number_set = set()
 
     # Read file that contains 5 years of data and get all species.
-    for row in open("seed_data/ebd_US-CA_201101_201702_relNov-2016.txt"):
+    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
@@ -65,7 +65,7 @@ def load_sampling_event():
 
     # Read file insert data
 
-    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
+    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -125,7 +125,7 @@ def load_observation():
     # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("data/ebd_US-CA_201507_201512_relNov-2016.txt"):
+    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
@@ -240,8 +240,8 @@ if __name__ == "__main__":
     # In case tables haven't been created, create them
     db.create_all()
 
-    # Import different types of data
+    # Import different types of data. UNCOMMENT WHEN READY TO SEED FILE!!!!!!
     # load_species()
     # load_sampling_event()
     # load_observation()
-    load_monthly_avgs()
+    # load_monthly_avgs()

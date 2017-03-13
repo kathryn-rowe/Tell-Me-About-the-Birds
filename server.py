@@ -155,6 +155,8 @@ def get_zoom(county_name):
 
     return county_location[county_name][1]
 
+
+# Save code -- may be able to filter multiple layers in mapbox
 # @app.route("/filter_geojson", methods=['POST'])
 # def filter_geojson():
 
@@ -277,6 +279,8 @@ def get_data():
 
 
 def create_geoFeature(bird_name, county_name):
+    """Given species and county, create a geoFeature for Mapbox data to load"""
+
     # query for the taxonmic number of the chosen species
     bird_info = db.session.query(Species).filter_by(common_name=bird_name).first()
     bird_number = bird_info.taxonomic_num
