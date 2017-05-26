@@ -35,64 +35,11 @@ mapbox_api_key = secret_key.mapbox_api_key
 # If you use an undefined variable in Jinja2, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
+# Data is huge! Start with these counties (Long, Lat, zoom level)
 county_location = {"Humboldt": [(-123.95, 40.74), 9],
                    "Monterey": [(-121.8946, 36.60), 10],
                    "San Francisco": [(-122.44, 37.76), 11],
                    "Yuba": [(-121.40, 39.28), 10]}
-                   # "Alameda": [(-122.884, 37.59), 9],
-                   # "Alpine": [(-119.80, 38.59), 9],
-                   # "Amador": [(-120.65, 38.44), 9],
-                   # "Butte": [(-121.56, 39.64), 9],
-                   # "Calaveras": [(-120.58, 38.16), 9],
-                   # "Colusa": [(-122.26, 39.18), 9],
-                   # "Contra Costa": [(-121.93, 37.93), 9],
-                   # "Del Norte": [(-123.90, 41.69), 9],
-                   # "El Dorado": [(-120.51, 38.76), 9],
-                   # "Fresno": [(-119.83, 36.66), 9],
-                   # "Glenn": [(-122.43, 39.59), 9],
-                   # "Imperial": [(-115.41, 33.03), 9],
-                   # "Inyo": [(-117.41, 36.58), 9],
-                   # "Kern": [(-118.66, 35.29), 9],
-                   # "Kings": [(-119.83, 36.03), 9],
-                   # "Lake": [(-122.78, 39.09), 9],
-                   # "Lassen": [(-120.58, 40.66), 9],
-                   # "Los Angeles": [(-118.20, 34.36), 9],
-                   # "Madera": [(-119.83, 37.16), 9],
-                   # "Marin": [(-122.73, 38.06), 11],
-                   # "Mariposa": [(-119.90, 37.54), 9],
-                   # "Mendocino": [(-123.41, 39.41), 9],
-                   # "Merced": [(-120.75, 37.16), 9],
-                   # "Modoc": [(-120.73, 41.56), 9],
-                   # "Mono": [(-118.86, 37.91), 9],
-                   # "Napa": [(-122.33, 38.48), 9],
-                   # "Nevada": [(-120.88, 39.34), 9],
-                   # "Orange": [(-117.76, 33.70), 9],
-                   # "Placer": [(-120.76, 39.06), 9],
-                   # "Plumas": [(-120.86, 39.98), 9],
-                   # "Riverside": [(-116.05, 33.73), 9],
-                   # "Sacramento": [(-121.31, 38.46), 9],
-                   # "San Benito": [(-121.08, 36.61), 9],
-                   # "San Bernardino": [(-116.16, 34.66), 9],
-                   # "San Diego": [(-116.80, 33.03), 9],
-                   # "San Joaquin": [(-121.30, 37.93), 9],
-                   # "San Luis Obispo": [(-120.53, 35.36), 9],
-                   # "San Mateo": [(-122.35, 37.44), 9],
-                   # "Santa Barbara": [(-120.03, 34.73), 9],
-                   # "Santa Clara": [(-121.76, 37.23), 9],
-                   # "Santa Cruz": [(-122.05, 37.06), 9],
-                   # "Shasta": [(-122.03, 40.76), 9],
-                   # "Sierra": [(-120.55, 39.58), 9],
-                   # "Siskiyou": [(-122.51, 41.58), 9],
-                   # "Solano": [(-121.95, 38.23), 9],
-                   # "Sonoma": [(-122.90, 38.55), 9],
-                   # "Stanislaus": [(-121.00, 37.54), 9],
-                   # "Sutter": [(-121.70, 39.01), 9],
-                   # "Tehama": [(-122.30, 40.13), 9],
-                   # "Trinity": [(-123.16, 40.58), 9],
-                   # "Tulare": [(-118.80, 36.26), 9],
-                   # "Tuolumne": [(-119.90, 38.06), 9],
-                   # "Ventura": [(-119.01, 34.46), 9],
-                   # "Yolo": [(-121.88, 38.69), 9],
 
 
 @app.before_request
@@ -102,7 +49,7 @@ def add_tests():
 
 @app.route('/')
 def index():
-    """Homepage, choose a county and species"""
+    """Landing page, user chooses a county and species"""
 
     counties = []
     for county in county_location:
@@ -119,6 +66,7 @@ def get_species():
 
     session["county_name"] = county
 
+    # Find the amount and species in the chosen county
     birds_in_county = db.session.query(MonthlyAvg).filter(MonthlyAvg.county == county).all()
 
     species_list = []
@@ -132,8 +80,7 @@ def get_species():
 def show_species():
 
     bird_name = request.args.get("bird")
-    # print bird_name
-    # print "*****************************"
+
     session["bird_name"] = bird_name
 
     return jsonify(bird_name)
@@ -151,36 +98,9 @@ def get_county(county_name):
 
 
 def get_zoom(county_name):
-    """Return zoom level for chosen county"""
+    """Return zoom level for chosen county for reloading map in single page application"""
 
     return county_location[county_name][1]
-
-
-# Save code -- may be able to filter multiple layers in mapbox
-# @app.route("/filter_geojson", methods=['POST'])
-# def filter_geojson():
-
-#     data = request.get_json()
-
-#     data_list = data['data']
-
-#     # for data in data_list:
-#     #     print data
-
-#     bird_data = []
-
-#     bird_data.append(data_list)
-#     # print bird_data
-
-#     birdDataMonth = FeatureCollection(bird_data)
-#     # print bird_data_month
-
-#     bird_json = {
-#         'birdDataMonth': birdDataMonth
-#     }
-
-#     # return "string"
-#     return jsonify(bird_json)
 
 
 def create_geojson(sampling_points):
@@ -243,9 +163,10 @@ def get_data():
     longitude, latitude = long_lat
 
     # find bird totals, location, species based on the chosen county
-    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
-                                                                                          Observation.taxonomic_num == bird_number,
-                                                                                          Observation.observation_count != 'X').all()
+    bird_county = db.session.query(Observation,
+                                   SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
+                                                                             Observation.taxonomic_num == bird_number,
+                                                                             Observation.observation_count != 'X').all()
 
     # Long, lat for each checklist
     sampling_points = []
@@ -287,9 +208,10 @@ def create_geoFeature(bird_name, county_name):
     session["bird_num"] = bird_number
 
     # find bird totals, location, species based on the chosen county
-    bird_county = db.session.query(Observation, SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
-                                                                                          Observation.taxonomic_num == bird_number,
-                                                                                          Observation.observation_count != 'X').all()
+    bird_county = db.session.query(Observation,
+                                   SamplingEvent).join(SamplingEvent).filter(SamplingEvent.county == county_name,
+                                                                             Observation.taxonomic_num == bird_number,
+                                                                             Observation.observation_count != 'X').all()
 
     # Long, lat for each checklist
     sampling_points = []
