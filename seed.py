@@ -65,7 +65,7 @@ def load_sampling_event():
 
     # Read file insert data
 
-    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -106,7 +106,7 @@ def load_sampling_event():
                 # Add to the session or it won't ever be stored
                 db.session.add(samplingEvent)
         count += 1
-        # print count
+        print count
         if count % 100000 == 0:
             print count
     # Commit work
@@ -125,7 +125,7 @@ def load_observation():
     # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data. UNCOMMENT WHEN READY TO SEED FILE!!!!!!
-    load_species()
-    # load_sampling_event()
+    # load_species()
+    load_sampling_event()
     # load_observation()
     # load_monthly_avgs()

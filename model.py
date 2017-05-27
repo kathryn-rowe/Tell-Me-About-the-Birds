@@ -132,7 +132,7 @@ def connect_to_db(app):
 
     # Configure to use our PstgreSQL database
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ebird_data'
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://about_the_birds:Patagonia31953@tell-me-about-the-birds.cbec8qxdlxnj.us-west-1.rds.amazonaws.com:5432/ebird_CA_data"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://about_the_birds:password@tell-me-about-the-birds.cbec8qxdlxnj.us-west-1.rds.amazonaws.com:5432/ebird_CA_data"
 
     # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///ebird_CA_data"
     app.config['SQLALCHEMY_ECHO'] = True
