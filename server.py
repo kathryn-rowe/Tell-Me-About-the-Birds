@@ -261,8 +261,7 @@ def reload_county():
     # receive data from drop-down menu ajax request
     bird = request.args.get("bird")
     county = request.args.get("county")
-    print bird
-    print "***************************"
+
     # get  the zoom level of the new chosen county
     zoomLevel = get_zoom(county)
 
