@@ -15,7 +15,6 @@ class Species(db.Model):
     __tablename__ = "species"
 
     taxonomic_num = db.Column(db.Float, primary_key=True)
-    # category = db.Column(db.String(50), nullable=False)
     common_name = db.Column(db.String(300), nullable=False)
     scientific_name = db.Column(db.String(300), nullable=False)
 
@@ -58,7 +57,6 @@ class Observation(db.Model):
     __tablename__ = "observation"
 
     global_id = db.Column(db.String(300), primary_key=True)
-    # sampling_event_id = db.Column(db.Integer, db.ForeignKey('sampling_event.sampling_event_id'), nullable=False)
     checklist = db.Column(db.String(100), db.ForeignKey('sampling_event.checklist'), nullable=False)
 
     # Which species and how many.
@@ -129,12 +127,14 @@ def example_data():
 # Helper functions
 
 
-def connect_to_db(app, db_uri="postgresql:///ebird_CA_data"):
+def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use our PstgreSQL database
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ebird_data'
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://about_the_birds:Patagonia31953@tell-me-about-the-birds.cbec8qxdlxnj.us-west-1.rds.amazonaws.com:5432/ebird_CA_data"
+
+    # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///ebird_CA_data"
     app.config['SQLALCHEMY_ECHO'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app

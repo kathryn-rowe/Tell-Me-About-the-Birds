@@ -20,12 +20,12 @@ def load_species():
 
     # Delete all rows in table, so if we need to run this a second time,
     # we won't be trying to add duplicate data
-    # Species.query.delete()
+    Species.query.delete()
     count = 0
     tax_number_set = set()
 
     # Read file that contains 5 years of data and get all species.
-    for row in open("example_data/ebd_US-CA-053_201401_201409_relAug-2014.txt"):
+    for row in open("data/ebd_US-CA_201101_201702_relNov-2016.txt"):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     db.create_all()
 
     # Import different types of data. UNCOMMENT WHEN READY TO SEED FILE!!!!!!
-    # load_species()
+    load_species()
     # load_sampling_event()
     # load_observation()
     # load_monthly_avgs()
