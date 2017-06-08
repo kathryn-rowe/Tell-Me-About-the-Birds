@@ -36,9 +36,9 @@ mapbox_api_key = secret_key.mapbox_api_key
 app.jinja_env.undefined = StrictUndefined
 
 # Data is huge! Start with these counties (Long, Lat, zoom level)
-county_location = {"Humboldt": [(-123.95, 40.74), 9],
+county_location = {"Humboldt": [(-124.178, 40.812), 9],
                    "Monterey": [(-121.8946, 36.60), 10],
-                   "San Francisco": [(-122.44, 37.76), 11],
+                   "San Francisco": [(-122.44, 37.76), 10],
                    "Yuba": [(-121.40, 39.28), 10]}
 
 

@@ -19,9 +19,12 @@ function changePicture(species) {
             $("#picture-row").show();
             var image = results.Image;
             if (image == "") {
-                image = "./static/images/generic_bird.jpg";
+                image = "./static/images/bird_outline.png";
             }
             var abstract = results.Abstract;
+            if (abstract == "") {
+                abstract = "No information available.";
+            }
             $("#bird-pic").attr("src", image);
             $("#abstract").html(abstract);
             

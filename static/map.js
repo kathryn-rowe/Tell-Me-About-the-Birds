@@ -5,16 +5,14 @@ var map;
 function renderMap(api_key, longitude, latitude, birding_data, zoomLevel) {
 
     mapboxgl.accessToken = api_key;
-    // var longitude = {{ longitude }}
-    // var latitude = {{ latitude }}
+
     map = new mapboxgl.Map({
         container: 'map', // container id
         style: 'mapbox://styles/mapbox/light-v9', //stylesheet location
         center: [longitude, latitude], // starting position
-        // center: [-121.403732, 40.492392],
-        zoom: zoomLevel // starting zoom
+        zoom: zoomLevel, // starting zoom
+        maxZoom: 12
     });
-    // map.scrollZoom.disable();
     
     var months = [
         'January',
@@ -124,11 +122,9 @@ function getData() {
         var zoomLevel = results.zoomLevel;
         var bird_name = results.bird_name;
         changePicture(bird_name);
-        // $("#map-loader").hide();
-        // $("#map-row").show();
         renderMap(api_key, longitude, latitude, birding_data, zoomLevel);
         $("#map-loader").hide();
-        $("#map-row").show();
+        // $("#map-row").show();
     });
 };
 

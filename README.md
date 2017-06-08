@@ -46,9 +46,20 @@ $ pip install -r requirements.txt
 ```
 Gather necessary secret keys from Mapbox and Flask. Save to your secrets file. Link to server.py.
 
-Create database 'ebird_data'
+Database
+If you want to link the app to my database hosted on AWS --> contact me at kjrowe06@gmail.com.
+```sh
+#in model.py
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://kate_admin:thepassword@the-birds.cbec8qxdlxnj.us-west-1.rds.amazonaws.com:5432/the_birds"
+```
+
+If you want to create your own, local database --> 1. Create database 'ebird_data' 2. Use the example ebird data provided 3. Seed database with seed.py
 ```sh
 $ createdb ebird_data
+```
+```sh
+#in model.py
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///ebird_data'
 ```
 Create tables and seed example data running seed.py. Be sure to uncomment final lines in seed.py.
 ```sh
