@@ -31,6 +31,13 @@ Clone repository:
 ```sh
 $ git clone https://github.com/kathryn-rowe/Tell-Me-About-the-Birds.git
 ```
+Move into folder and create vagrant machine.
+
+```sh
+$ cd Tell-Me-About-the-Birds
+$ vagrant up
+$ vagrant ssh
+```
 Create virtual environment:
 
 ```sh

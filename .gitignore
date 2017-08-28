@@ -1,0 +1,12 @@
+env/
+secret*
+seed_data/
+*.pyc
+save/
+unused_files/
+Procfile
+data/
+kate_rowe_demo.mp4
+spec/
+*.yml
+*.sql
