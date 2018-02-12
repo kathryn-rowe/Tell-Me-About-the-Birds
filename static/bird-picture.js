@@ -10,7 +10,7 @@ function changePicture(species) {
     var bird = bird_name.replace(/\s+/g, '-').toLowerCase();
 
     $.ajax({
-        url: ("http://api.duckduckgo.com/?q="+bird+"&format=json&pretty=1"),
+        url: ("https://api.duckduckgo.com/?q="+bird+"&format=json&pretty=1&t=tellmeaboutthebirds"),
         jsonp: "callback",
         dataType: 'jsonp',
         xhrFields: { withCredentials: true},

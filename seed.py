@@ -12,6 +12,7 @@ from server import app
 # __, __, __, __, __, __, sampling_event_id = row[29]
 # __, __, __, __, __, __, all_species = row[36]
 
+filepath = "data/ebd_US-CA_201501_201506_relNov-2016.txt"
 
 def load_species():
     """Load species data into database."""
@@ -25,7 +26,7 @@ def load_species():
     tax_number_set = set()
 
     # Read file that contains 5 years of data and get all species.
-    for row in open("data/ebd_US-CA_201101_201702_relNov-2016.txt"):
+    for row in open(filepath):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:5]
@@ -65,7 +66,7 @@ def load_sampling_event():
 
     # Read file insert data
 
-    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
+    for row in open(filepath):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:37]
@@ -125,7 +126,7 @@ def load_observation():
     # tax_number_set = set()
 
     # Read file and insert data
-    for row in open("data/ebd_US-CA_201501_201506_relNov-2016.txt"):
+    for row in open(filepath):
         if count != 0:
             row = row.rstrip()
             row = row.split("\t")[:30]
